@@ -1,0 +1,35 @@
+# Dockerfile for Python based RDKit implementation
+# Based on Debian.
+
+FROM debian:stretch
+LABEL maintainer="Tim Dudgeon<tdudgeon@informaticsmatters.com>"
+
+RUN apt-get update &&\
+ apt-get upgrade -y &&\ 
+ apt-get install -y --no-install-recommends\
+ python\
+ python-dev\
+ python-numpy\
+ python-pip\
+ libboost-system1.62.0\
+ libboost-thread1.62.0\
+ libboost-serialization1.62.0\
+ libboost-python1.62.0\
+ libboost-regex1.62.0\
+ libboost-chrono1.62.0\
+ libboost-date-time1.62.0\
+ libboost-atomic1.62.0\
+ sqlite3\
+ wget\
+ zip &&\
+ apt-get clean -y
+
+ARG TAG=latest
+
+COPY artifacts/$TAG/debs/*.deb /tmp/
+RUN dpkg -i /tmp/*.deb && rm -f /tmp/*.deb
+WORKDIR /
+
+# add the rdkit user
+RUN useradd -u 1000 -U -G 0 rdkit
+USER 1000

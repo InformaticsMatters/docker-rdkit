@@ -1,0 +1,61 @@
+# Dockerfile for building RDKit artifacts.
+# This is a heavyweight image containing all aspects of RDKit plus the build system.
+# It's purpose is to create the RDKit artifacts that will be deployed to lighter weigth images.
+
+
+FROM debian:stretch
+LABEL maintainer="Tim Dudgeon<tdudgeon@informaticsmatters.com>"
+
+RUN apt-get update &&\
+  apt-get upgrade -y &&\
+  apt-get install -y --no-install-recommends \
+  build-essential\
+  python-numpy\
+  cmake\
+  python-dev\
+  python-pip\
+  sqlite3\
+  libsqlite3-dev\
+  libboost-dev\
+  libboost-system-dev\
+  libboost-thread-dev\
+  libboost-serialization-dev\
+  libboost-python-dev\
+  libboost-regex-dev\
+  swig\
+  git\
+  wget\
+  rpm\
+  openjdk-8-jdk\
+  zip\
+  unzip &&\
+  apt-get clean -y
+
+ARG RDKIT_BRANCH=master
+RUN git clone -b $RDKIT_BRANCH --single-branch https://github.com/rdkit/rdkit.git
+
+ENV RDBASE=/rdkit
+ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$RDBASE/lib:$RDBASE/Code/JavaWrappers/gmwrapper:/usr/lib/x86_64-linux-gnu
+ENV PYTHONPATH=$PYTHONPATH:$RDBASE
+ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+ENV CLASSPATH=$RDBASE/Code/JavaWrappers/gmwrapper/org.RDKit.jar
+
+RUN mkdir $RDBASE/build
+WORKDIR $RDBASE/build
+
+RUN cmake -Wno-dev \
+  -DRDK_INSTALL_INTREE=OFF \
+  -DRDK_BUILD_INCHI_SUPPORT=ON \
+  -DRDK_BUILD_AVALON_SUPPORT=ON \
+  -DRDK_BUILD_PYTHON_WRAPPERS=ON \
+  -DRDK_BUILD_SWIG_WRAPPERS=ON \
+  -DCMAKE_INSTALL_PREFIX=/usr \
+  ..
+
+RUN nproc=$(getconf _NPROCESSORS_ONLN)\
+  && make -j $(( nproc > 2 ? nproc - 2 : 1 ))\
+  && make install\
+  && cpack -G DEB
+
+WORKDIR $RDBASE
+
