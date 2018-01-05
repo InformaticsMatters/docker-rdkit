@@ -3,14 +3,16 @@
 **IMPORTANT** these contents are currently experimental but are expected to superceed the existing informaticsmatters/rdkit*
 Docker images.
 
-These Dockerfiles and shell scripts are for building various Docker images for RDKit.
+These Dockerfiles and shell scripts are for building various Docker images for RDKit. The aim is to build a number of lightweight images that are suited for running in production cloud environments like Kubernetes and OpenShift. For this purpose the images need to be:
+
+1. as small as is reasonable to minimise dowload time and reduce the potential attack surface 
+1. run as a non-root user or a arbitarily assigned user ID.
+
+The appoach taken to build these images currently follows the [builder pattern](https://blog.alexellis.io/mutli-stage-docker-builds/) but once the [multi stage build](https://docs.docker.com/engine/userguide/eng-image/multistage-build/) feature recently introduced in Docker 17.05 get's into mainsream Docker distributions we will likely change to use that better approach.
 
 For each RDKit version (image tag) we build a number of images:
 
-* `informaticsmatters/rdkit_build` - this does a full build of RDKit from source. The result is a kitchen sink image (almost 2GB in size)
-that contains the entire build infrastructure and eveything that is built. The main purpose of this image is to build the artifacts 
-needed for assembling the other lightweight images. Whist this image might be of some use for personal hacking it is NOT suitable for
-a public facing system as it is so large and has such a large attack surface.
+* `informaticsmatters/rdkit_build` - this does a full build of RDKit from source. The result is a kitchen sink image (almost 2GB in size) that contains the entire build infrastructure and eveything that is built. The main purpose of this image is to build the artifacts needed for assembling the other lightweight images. Whist this image might be of some use for personal hacking it is NOT suitable for a public facing system as it is so large and has such a large attack surface.
 * `informaticsmatters/rdkit_python_debian` - a Debian based distribution designed for running RDKit from Python 2.7. The image size is 
 approx 400MB.
 * `informaticsmatters/rdkit_java_debian` -  a Debian based distribution designed for running RDKit from Java. The image size is 

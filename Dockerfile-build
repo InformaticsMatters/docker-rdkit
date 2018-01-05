@@ -25,7 +25,6 @@ RUN apt-get update &&\
   swig\
   git\
   wget\
-  rpm\
   openjdk-8-jdk\
   zip\
   unzip &&\
