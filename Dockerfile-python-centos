@@ -12,7 +12,7 @@ RUN yum update -y &&\
  python-devel\
  numpy\
  python2-pip\
- boost &&\
+ boost\
  boost-python &&\
  yum clean -y all &&\
  rm -rf /var/cache/yum

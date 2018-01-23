@@ -1,0 +1,53 @@
+# Dockerfile for building RDKit artifacts.
+# This is a heavyweight image containing all aspects of RDKit plus the build system.
+# It's purpose is to create the RDKit artifacts that will be deployed to lighter weigth images.
+
+
+FROM centos:7
+LABEL maintainer="Tim Dudgeon<tdudgeon@informaticsmatters.com>"
+
+
+RUN yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm &&\
+  yum update -y &&\
+  yum install -y \
+  cmake tk-devel readline-devel zlib-devel bzip2-devel sqlite-devel @development\
+  python-devel\
+  numpy\
+  boost\
+  boost-python\
+  boost-devel\
+  eigen3 eigen3-devel\
+  swig\
+  git\
+  openjdk-8-jdk\
+  yum clean all &&\
+  rm -rf /var/cache/yum
+
+ARG RDKIT_BRANCH=master
+RUN git clone -b $RDKIT_BRANCH --single-branch https://github.com/rdkit/rdkit.git
+
+ENV RDBASE=/rdkit
+ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+
+RUN mkdir $RDBASE/build
+WORKDIR $RDBASE/build
+
+RUN cmake -Wno-dev\
+  -DRDK_INSTALL_INTREE=OFF\
+  -DRDK_BUILD_INCHI_SUPPORT=OFF\
+  -DRDK_BUILD_AVALON_SUPPORT=ON\
+  -DRDK_BUILD_PYTHON_WRAPPERS=ON\
+  -DRDK_BUILD_SWIG_WRAPPERS=OFF\
+  -DCMAKE_INSTALL_PREFIX=/usr\
+  ..
+
+RUN nproc=$(getconf _NPROCESSORS_ONLN)\
+  && make -j $(( nproc > 2 ? nproc - 2 : 1 ))\
+#  && make install\
+  && cpack -G RPM
+
+ENV CLASSPATH=$RDBASE/Code/JavaWrappers/gmwrapper/org.RDKit.jar
+ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$RDBASE/lib:$RDBASE/Code/JavaWrappers/gmwrapper:/usr/lib/x86_64-linux-gnu
+ENV PYTHONPATH=$PYTHONPATH:$RDBASE
+WORKDIR $RDBASE
+
