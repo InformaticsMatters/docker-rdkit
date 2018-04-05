@@ -7,10 +7,16 @@ FROM centos:7
 LABEL maintainer="Tim Dudgeon<tdudgeon@informaticsmatters.com>"
 
 
-RUN yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm &&\
+RUN yum -y install epel-release &&\
   yum update -y &&\
-  yum install -y \
-  cmake tk-devel readline-devel zlib-devel bzip2-devel sqlite-devel @development\
+  yum install -y --setopt=tsflags=nodocs --setopt=override_install_langs=en_US.utf8\
+  cmake\
+  tk-devel\
+  readline-devel\
+  zlib-devel\
+  bzip2-devel\
+  sqlite-devel\
+  @development\
   python-devel\
   numpy\
   boost\

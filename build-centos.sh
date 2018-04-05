@@ -24,7 +24,6 @@ docker build -f Dockerfile-python-centos\
   --build-arg TAG=$TAG .
 echo "Built image informaticsmatters/rdkit-python-centos:$TAG"
 
-
 # build image for java
 docker build -f Dockerfile-java-centos\
   -t $BASE/rdkit-java-centos:$TAG\
