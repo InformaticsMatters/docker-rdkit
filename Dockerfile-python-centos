@@ -4,9 +4,8 @@
 FROM centos:7
 LABEL maintainer="Tim Dudgeon<tdudgeon@informaticsmatters.com>"
 
-RUN yum -y install epel-release
-
-RUN yum update -y &&\
+RUN yum -y install epel-release &&\
+ yum update -y &&\
  yum install -y --setopt=tsflags=nodocs --setopt=override_install_langs=en_US.utf8\
  python\
  python-devel\

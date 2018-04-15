@@ -1,6 +1,8 @@
 #!/bin/bash
+# Attempt to do a centos based build
+# NOTE - this does not yet work correctly. Use build.sh which is debian based instead.
 
-set -e
+set -ex
 
 source params.sh
 
