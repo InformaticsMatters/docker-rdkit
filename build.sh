@@ -3,9 +3,6 @@
 set -xe
 
 source params.sh
-#export TAG=Release_2017_09_2
-#export BRANCH=Release_2017_09_2
-#export BASE=informaticsmatters
 
 # build RDKit
 docker build -f Dockerfile-build-debian\

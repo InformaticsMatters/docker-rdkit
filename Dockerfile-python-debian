@@ -11,6 +11,7 @@ RUN apt-get update &&\
  python-dev\
  python-numpy\
  python-pip\
+ python-setuptools\
  libboost-system1.62.0\
  libboost-thread1.62.0\
  libboost-serialization1.62.0\
