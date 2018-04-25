@@ -11,6 +11,7 @@ RUN yum -y install epel-release &&\
  python-devel\
  numpy\
  python2-pip\
+ python-setuptools\ 
  boost\
  boost-python &&\
  yum clean -y all &&\
