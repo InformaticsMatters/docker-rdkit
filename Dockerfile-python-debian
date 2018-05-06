@@ -1,7 +1,7 @@
 # Dockerfile for Python based RDKit implementation
 # Based on Debian.
 
-FROM debian:stretch
+FROM debian:buster
 LABEL maintainer="Tim Dudgeon<tdudgeon@informaticsmatters.com>"
 
 RUN apt-get update &&\
@@ -32,5 +32,5 @@ RUN dpkg -i /tmp/*.deb && rm -f /tmp/*.deb
 WORKDIR /
 
 # add the rdkit user
-RUN useradd -u 1000 -U -G 0 rdkit
+RUN useradd -u 1000 -g 0 -m rdkit
 USER 1000
