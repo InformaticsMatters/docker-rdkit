@@ -32,7 +32,9 @@ RUN apt-get update &&\
   apt-get clean -y
 
 ARG RDKIT_BRANCH=master
-RUN git clone -b $RDKIT_BRANCH --single-branch https://github.com/rdkit/rdkit.git
+RUN git clone -b $RDKIT_BRANCH --single-branch https://github.com/rdkit/rdkit.git &&\
+  cd rdkit &&\
+  git checkout tags/${RDKIT_BRANCH}_1  
 
 ENV RDBASE=/rdkit
 ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$RDBASE/lib:$RDBASE/Code/JavaWrappers/gmwrapper:/usr/lib/x86_64-linux-gnu

@@ -1,7 +1,7 @@
 # Dockerfile for Java based RDKit implementation
 # Based on Debian.
 
-FROM debian:stretch
+FROM debian:buster
 LABEL maintainer="Tim Dudgeon<tdudgeon@informaticsmatters.com>"
 
 RUN apt-get update &&\
