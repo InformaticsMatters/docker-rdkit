@@ -31,8 +31,12 @@ RUN apt-get update &&\
   unzip rpm &&\
   apt-get clean -y
 
-ARG RDKIT_BRANCH=master
-RUN git clone -b $RDKIT_BRANCH --single-branch https://github.com/rdkit/rdkit.git
+ARG GIT_BRANCH=master
+ARG GIT_TAG
+
+RUN if [ $GIT_TAG ]; then echo "Checking out tag $GIT_TAG from branch $GIT_BRANCH"; else echo "Checking out branch $GIT_BRANCH"; fi &&\
+  git clone -b $GIT_BRANCH --single-branch https://github.com/rdkit/rdkit.git &&\
+  if [ $GIT_TAG ]; then cd rdkit && git fetch --tags && git checkout $GIT_TAG; fi
 
 ENV RDBASE=/rdkit
 ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$RDBASE/lib:$RDBASE/Code/JavaWrappers/gmwrapper:/usr/lib/x86_64-linux-gnu

@@ -17,9 +17,9 @@ RUN yum -y install epel-release &&\
  yum clean -y all &&\
  rm -rf /var/cache/yum
 
-ARG TAG=latest
+ARG DOCKER_TAG=latest
 
-COPY artifacts/$TAG/rpms/*.rpm /tmp/
+COPY artifacts/$DOCKER_TAG/rpms/*.rpm /tmp/
 RUN rpm -iv /tmp/*.rpm && rm -f /tmp/*.rpm
 WORKDIR /
 

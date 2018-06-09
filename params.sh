@@ -1,5 +1,5 @@
-export TAG=latest
-export BRANCH=master
+export DOCKER_TAG=latest
+export GIT_BRANCH=master
 
 export BASE=informaticsmatters
-echo "TAG=$TAG BRANCH=$BRANCH"
+echo "DOCKER_TAG=$DOCKER_TAG GIT_BRANCH=$GIT_BRANCH no tag"
