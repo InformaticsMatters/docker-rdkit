@@ -27,9 +27,9 @@ RUN apt-get update &&\
  zip &&\
  apt-get clean -y
 
-ARG TAG=latest
+ARG DOCKER_TAG=latest
 
-COPY artifacts/$TAG/debs/*.deb /tmp/
+COPY artifacts/$DOCKER_TAG/debs/*.deb /tmp/
 RUN dpkg -i /tmp/*.deb && rm -f /tmp/*.deb
 WORKDIR /
 
