@@ -17,10 +17,10 @@ RUN apt-get update &&\
  libboost-atomic1.62.0 &&\
  apt-get clean -y
 
-ARG TAG=latest
+ARG DOCKER_TAG=latest
 
-COPY artifacts/$TAG/java/* /rdkit/gmwrapper/
-COPY artifacts/$TAG/debs/RDKit-*-Linux-Runtime.deb /tmp/
+COPY artifacts/$DOCKER_TAG/java/* /rdkit/gmwrapper/
+COPY artifacts/$DOCKER_TAG/debs/RDKit-*-Linux-Runtime.deb /tmp/
 RUN dpkg -i /tmp/*.deb && rm -f /tmp/*.deb
 WORKDIR /
 

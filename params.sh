@@ -1,5 +1,6 @@
-export TAG=Release_2018_03_01
-export BRANCH=Release_2018_03
+export DOCKER_TAG=Release_2018_03_2
+export GIT_BRANCH=Release_2018_03
+export GIT_TAG=$DOCKER_TAG
 
 export BASE=informaticsmatters
-echo "TAG=$TAG BRANCH=$BRANCH"
+echo "DOCKER_TAG=$DOCKER_TAG GIT_BRANCH=$GIT_BRANCH GIT_TAG=$GIT_TAG" 
