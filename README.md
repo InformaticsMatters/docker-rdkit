@@ -28,11 +28,11 @@ RDKit Java bindings. You need to provide the war file with the web application. 
 * `Release_2017_09_2` - build from RDKit Release_2017_09_2 branch. These are not working correctly yet and may be dropped.
 * `Release_2018_03` - build from RDKit Release_2018_03 branch and occasionally rebuilt as the code gets updated. Images have tag of `Release_2018_03`.
 * `Release_2018_03_1` - build from RDKit Release_2018_03_1 release tag. These images should never change [1]. Images have tag of `Release_2018_03_1` [2].
-* `Release_2018_03_2` - build from RDKit Release_2018_03_2 release tag. These images should never change [1). Images have tag of `Release_2018_03_2`.
+* `Release_2018_03_2` - build from RDKit Release_2018_03_2 release tag. These images should never change [1]. Images have tag of `Release_2018_03_2`.
 
-[1] Where we say that the images should never change what we really mean in that the RDKit content should never change. We may rebuild these images occasionally when we find further improvements, and the underlying Centos/Debian packages may be updated, but the RDKit code whould be exactly the same.
+[1] Where we say that the images should never change what we really mean in that the RDKit content should never change. We may rebuild these images occasionally when we find further improvements, and the underlying Centos/Debian packages may be updated, but the RDKit code should be exactly the same.
 
-[2] These images were originally tagged as `Release_2018_03_01` (2 digits as the final number). For better consistency with the RDKit GitHub tag names we switched to using a single digit format. Tags with two digits are also present for backward compatibility and point to the equivalent single digit image.
+[2] These images were originally tagged as `Release_2018_03_01` (2 digits as the final number). For better consistency with the RDKit GitHub tag names we switched to using a single digit format. Tags with two digits are also present for backward compatibility and point to the equivalent single digit image. Please use the signle digit format.
 
 GitHub repo for RDKit is [here](https://github.com/rdkit/rdkit).
 GitHub repo for this project is [here](https://github.com/InformaticsMatters/docker-rdkit)
