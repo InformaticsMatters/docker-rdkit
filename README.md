@@ -69,6 +69,37 @@ RDKit version: 2018.03.1.dev1
 Read smiles: c1ccccc1 Number of atoms: 6
 ```
 
+## RDKit cartridge
+
+Efforts are now underway to extend this process to handle the RDKit postgres cartridge.
+So far the build and installation of the cartridge in the `rdkit-build` image is working, but the RPM and DEB packages are not being built.
+We hope to solve this soon so that we can create a series of `informaticsmatters/rdkit-postgresql` images.
+
+If you want to use the cartridge in the `informaticsmatters/rdkit-build:latest` image then try something like this:
+```
+$ docker run -it --rm -u postgres informaticsmatters/rdkit-build:latest bash
+postgres@db485abc2f02:/rdkit$ service postgresql start
+[ ok ] Starting PostgreSQL 10 database server: main.
+postgres@db485abc2f02:/rdkit$ psql 
+psql (10.4 (Debian 10.4-2))
+Type "help" for help.
+
+postgres=# create database rdkit;
+CREATE DATABASE
+postgres=# \q
+postgres@db485abc2f02:/rdkit$ psql -d rdkit
+psql (10.4 (Debian 10.4-2))
+Type "help" for help.
+
+rdkit=# CREATE EXTENSION rdkit;
+CREATE EXTENSION
+rdkit=# \q
+```
+
+Notes:
+1. The postgresql service is not started by default in this image as typically it will not be used. Hence why its necessary to run `service postgresql start`.
+2. You must initially connect to the database as the `postgres` user, hence the need for the `-u postgres` option for the `docker run` command.
+
 ## Hopefully coming soon
 
 * Tests for built images.
