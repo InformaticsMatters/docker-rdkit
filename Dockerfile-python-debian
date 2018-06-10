@@ -29,7 +29,7 @@ RUN apt-get update &&\
 
 ARG DOCKER_TAG=latest
 
-COPY artifacts/$DOCKER_TAG/debs/*.deb /tmp/
+COPY artifacts/$DOCKER_TAG/debs/RDKit-*-Linux-Runtime.deb artifacts/$DOCKER_TAG/debs/RDKit-*-Linux-Python.deb /tmp/
 RUN dpkg -i /tmp/*.deb && rm -f /tmp/*.deb
 WORKDIR /
 
