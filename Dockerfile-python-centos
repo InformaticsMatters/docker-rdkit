@@ -19,7 +19,7 @@ RUN yum -y install epel-release &&\
 
 ARG DOCKER_TAG=latest
 
-COPY artifacts/$DOCKER_TAG/rpms/*.rpm /tmp/
+COPY artifacts/$DOCKER_TAG/rpms/RDKit-*-Linux-Runtime.rpm artifacts/$DOCKER_TAG/rpms/RDKit-*-Linux-Python.rpm /tmp/
 RUN rpm -iv /tmp/*.rpm && rm -f /tmp/*.rpm
 WORKDIR /
 
