@@ -1,4 +1,4 @@
-export DOCKER_TAG=Release_2018_03_2
+export DOCKER_TAG=Release_2018_03_1
 export GIT_BRANCH=Release_2018_03
 export GIT_TAG=$DOCKER_TAG
 
