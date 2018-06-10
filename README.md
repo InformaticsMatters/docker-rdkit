@@ -6,28 +6,33 @@ Docker images.
 These Dockerfiles and shell scripts are for building various Docker images for RDKit. The aim is to build a number of lightweight images that are suited for running in production cloud environments like Kubernetes and OpenShift. For this purpose the images need to be:
 
 1. as small as is reasonable to minimise dowload time and reduce the potential attack surface 
-1. run as a non-root user or a arbitarily assigned user ID.
+1. run as a non-root user or an arbitarily assigned user ID.
 
-The appoach taken to build these images currently follows the [builder pattern](https://blog.alexellis.io/mutli-stage-docker-builds/).
+The approach taken to build these images currently follows the [builder pattern](https://blog.alexellis.io/mutli-stage-docker-builds/).
 See the [Smaller containers](https://www.informaticsmatters.com/category/containers/index.html) series of posts on the 
 [Informatics Matters blog](https://www.informaticsmatters.com/blog.html) for more details about how these images are built.
 
 For each RDKit version (image tag) we build a number of images:
 
-* `informaticsmatters/rdkit-build` - this does a full build of RDKit from source. The result is a kitchen sink image (almost 2GB in size) that contains the entire build infrastructure and eveything that is built. The main purpose of this image is to build the artifacts needed for assembling the other lightweight images. Whist this image might be of some use for personal hacking it is NOT suitable for a public facing system as it is so large and has such a large attack surface.
+* `informaticsmatters/rdkit-build` - this does a full build of RDKit from source. The result is a kitchen sink image (almost 2GB in size) that contains the entire build infrastructure and eveything that is built. The main purpose of this image is to build the artifacts needed for assembling the other lightweight images. Whist this image might be of some use for personal hacking it is NOT suitable for a public facing system as it is so large and has such a big attack surface.
 * `informaticsmatters/rdkit-python-debian` - a Debian based distribution designed for running RDKit from Python 2.7. The image size is 
 approx 400MB.
 * `informaticsmatters/rdkit-java-debian` -  a Debian based distribution designed for running RDKit from Java. The image size is 
 approx 350MB.
 * `informaticsmatters/rdkit-tomcat-debian` -  a Debian based distribution designed for running a servlet in Apache Tomcat that uses the
-RDKit Java bindings. Youmneed to provide the war file with the web application. The image size is approx 370MB.
+RDKit Java bindings. You need to provide the war file with the web application. The image size is approx 370MB.
 
 ## Branches
 
-* `master` - build from current RDKit master branch. These imags are updated at irregular intervals. Images have tag of `latest`.
+* `master` - build from current RDKit master branch. These images are updated at irregular intervals. Images have tag of `latest`.
 * `Release_2017_09_2` - build from RDKit Release_2017_09_2 branch. These are not working correctly yet and may be dropped.
 * `Release_2018_03` - build from RDKit Release_2018_03 branch and occasionally rebuilt as the code gets updated. Images have tag of `Release_2018_03`.
-* `Release_2018_03_01` - build from RDKit Release_2018_03_01 release tag. These images should never change. Images have tag of `Release_2018_03_01`.
+* `Release_2018_03_1` - build from RDKit Release_2018_03_1 release tag. These images should never change [1]. Images have tag of `Release_2018_03_1` [2].
+* `Release_2018_03_2` - build from RDKit Release_2018_03_2 release tag. These images should never change [1). Images have tag of `Release_2018_03_2`.
+
+[1] Where we say that the images should never change what we really mean in that the RDKit content should never change. We may rebuild these images occasionally when we find further improvements, and the underlying Centos/Debian packages may be updated, but the RDKit code whould be exactly the same.
+
+[2] These images were originally tagged as `Release_2018_03_01` (2 digits as the final number). For better consistency with the RDKit GitHub tag names we switched to using a single digit format. Tags with two digits are also present for backward compatibility and point to the equivalent single digit image.
 
 GitHub repo for RDKit is [here](https://github.com/rdkit/rdkit).
 GitHub repo for this project is [here](https://github.com/InformaticsMatters/docker-rdkit)
@@ -40,7 +45,7 @@ Create the docker images like this:
 
 `./build.sh`
 
-This builds the main `rdkit-build` image and then extracts the deb packages and Java artifacts from it for use in assembling
+This builds the main `rdkit-build` image and then extracts the deb and rpm packages and the Java artifacts from it for use in assembling
 the other images, and then assembles those `rdkit-python-debian`, `rdkit-java-debian` and `rdkit-tomcat-debian` images.
 
 Push the images to Docker Hub like this:
@@ -64,10 +69,11 @@ RDKit version: 2018.03.1.dev1
 Read smiles: c1ccccc1 Number of atoms: 6
 ```
 
-## Coming soon
+## Hopefully coming soon
 
 * Tests for built images.
-* Images for Centos7 and RDKit cartridge.
-* Requests also welcome!
+* Images for RDKit cartridge.
+
+Requests also welcome!
 
  
