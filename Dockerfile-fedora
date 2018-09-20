@@ -1,4 +1,4 @@
-FROM fedora:27
+FROM fedora:28
 
 RUN dnf -y update && dnf -y upgrade && dnf -y install\
  gcc-c++\
@@ -17,7 +17,7 @@ RUN dnf -y update && dnf -y upgrade && dnf -y install\
  zip\
  wget
 
-ENV RDKIT_BRANCH=Release_2017_09_2
+ENV RDKIT_BRANCH=master
 RUN git clone -b $RDKIT_BRANCH --single-branch https://github.com/rdkit/rdkit.git
 
 ENV RDBASE=/rdkit

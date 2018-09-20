@@ -7,7 +7,7 @@ FROM debian:buster
 LABEL maintainer="Tim Dudgeon<tdudgeon@informaticsmatters.com>"
 
 RUN apt-get update &&\
-  apt-get upgrade -y &&\
+  #apt-get upgrade -y &&\
   apt-get install -y --no-install-recommends \
   build-essential\
   python-numpy\

@@ -3,13 +3,13 @@
 # It's purpose is to create the RDKit artifacts that will be deployed to lighter weigth images.
 
 
-FROM centos:7
+FROM fedora:28
 LABEL maintainer="Tim Dudgeon<tdudgeon@informaticsmatters.com>"
 
 
-RUN yum -y install epel-release &&\
-  yum update -y &&\
-  yum install -y --setopt=tsflags=nodocs --setopt=override_install_langs=en_US.utf8\
+RUN dnf -y install epel-release &&\
+  dnf update -y &&\
+  dnf install -y --setopt=tsflags=nodocs --setopt=override_install_langs=en_US.utf8\
   cmake\
   tk-devel\
   readline-devel\
@@ -27,8 +27,8 @@ RUN yum -y install epel-release &&\
   swig\
   git\
   openjdk-8-jdk\
-  yum clean all &&\
-  rm -rf /var/cache/yum
+  dnf clean all &&\
+  rm -rf /var/cache/dnf
 
 ARG RDKIT_BRANCH=master
 RUN git clone -b $RDKIT_BRANCH --single-branch https://github.com/rdkit/rdkit.git

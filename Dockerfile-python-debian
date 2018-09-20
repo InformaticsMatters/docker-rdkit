@@ -5,7 +5,7 @@ FROM debian:buster
 LABEL maintainer="Tim Dudgeon<tdudgeon@informaticsmatters.com>"
 
 RUN apt-get update &&\
- apt-get upgrade -y &&\ 
+ #apt-get upgrade -y &&\ 
  apt-get install -y --no-install-recommends\
  python\
  python-dev\
@@ -31,6 +31,11 @@ ARG DOCKER_TAG=latest
 
 COPY artifacts/$DOCKER_TAG/debs/RDKit-*-Linux-Runtime.deb artifacts/$DOCKER_TAG/debs/RDKit-*-Linux-Python.deb /tmp/
 RUN dpkg -i /tmp/*.deb && rm -f /tmp/*.deb
+
+# For some unexplicable reason doing `apt-get upgrade` during the inital process results in python-numpy being downgraded 
+# and RDKit not working. But doing it here doesn't give problems.
+RUN apt-get upgrade -y
+
 WORKDIR /
 
 # add the rdkit user
