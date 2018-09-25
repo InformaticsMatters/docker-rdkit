@@ -42,7 +42,9 @@ RUN if [ $GIT_TAG ]; then echo "Checking out tag $GIT_TAG from branch $GIT_BRANC
   if [ $GIT_TAG ]; then cd rdkit && git fetch --tags && git checkout $GIT_TAG; fi
 
 # hack to build cartridge packages. can be removed once this code hits the repo
-COPY cart_patch/ /rdkit 
+#COPY cart_patch/ /rdkit 
+COPY patch_pgsql_rpm.patch /rdkit
+RUN cd /rdkit && patch -p1 < patch_pgsql_rpm.patch
 
 ENV RDBASE=/rdkit
 ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$RDBASE/lib:$RDBASE/Code/JavaWrappers/gmwrapper:/usr/lib/x86_64-linux-gnu

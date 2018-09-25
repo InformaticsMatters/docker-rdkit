@@ -37,3 +37,10 @@ docker build -f Dockerfile-tomcat-debian\
   --build-arg DOCKER_TAG=$DOCKER_TAG .
 echo "Built image informaticsmatters/rdkit-tomcat-debian:$DOCKER_TAG"
 
+# build image for postgresql cartridge on debian
+docker build -f Dockerfile-cartridge-debian\
+  -t $BASE/rdkit-cartridge-debian:$DOCKER_TAG\
+  --build-arg DOCKER_TAG=$DOCKER_TAG .
+echo "Built image informaticsmatters/rdkit-cartridge-debian:$DOCKER_TAG"
+
+

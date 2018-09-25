@@ -1,0 +1,38 @@
+# Dockerfile for Python based RDKit implementation
+# Based on Debian.
+
+FROM postgres:10
+LABEL maintainer="Tim Dudgeon<tdudgeon@informaticsmatters.com>"
+
+RUN apt-get update &&\
+ #apt-get upgrade -y &&\ 
+ apt-get install -y --no-install-recommends\
+ libboost-system1.62.0\
+ libboost-thread1.62.0\
+ libboost-serialization1.62.0\
+ libboost-python1.62.0\
+ libboost-regex1.62.0\
+ libboost-chrono1.62.0\
+ libboost-date-time1.62.0\
+ libboost-atomic1.62.0\
+ wget\
+ zip &&\
+ apt-get clean -y
+
+ARG DOCKER_TAG=latest
+
+COPY\
+  artifacts/debian/$DOCKER_TAG/debs/RDKit-*-Linux-Runtime.deb\
+  artifacts/debian/$DOCKER_TAG/debs/RDKit-*-Linux-PgSQL.deb\
+  /tmp/
+RUN dpkg -i /tmp/*.deb && rm -f /tmp/*.deb
+
+# For some unexplicable reason doing `apt-get upgrade` during the inital process results in python-numpy being downgraded 
+# and RDKit not working. But doing it here doesn't give problems.
+#RUN apt-get upgrade -y
+
+WORKDIR /
+
+# add the rdkit user
+#RUN useradd -u 1000 -g 0 -m rdkit
+#USER 1000

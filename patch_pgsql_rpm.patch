@@ -1,0 +1,55 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index a999a57..a2a1214 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -460,7 +460,7 @@ SET(CPACK_RPM_COMPONENT_INSTALL ON)
+ SET(CPACK_DEB_COMPONENT_INSTALL ON)
+ SET(CPACK_MONOLITHIC_INSTALL OFF)
+ 
+-SET(CPACK_COMPONENTS_ALL runtime base data docs dev python extras)
++SET(CPACK_COMPONENTS_ALL runtime base data docs dev python extras pgsql)
+ set(CPACK_COMPONENT_RUNTIME_GROUP "Runtime")
+ set(CPACK_COMPONENT_BASE_GROUP "Runtime")
+ set(CPACK_COMPONENT_DATA_GROUP "Runtime")
+@@ -468,6 +468,7 @@ set(CPACK_COMPONENT_DOCS_GROUP "Runtime")
+ set(CPACK_COMPONENT_DEV_GROUP "Development")
+ set(CPACK_COMPONENT_PYTHON_GROUP "Python")
+ set(CPACK_COMPONENT_EXTRAS_GROUP "Extras")
++set(CPACK_COMPONENT_PGSQL_GROUP "PgSQL")
+ 
+ SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "RDKit")
+ SET(CPACK_PACKAGE_VENDOR "rdkit.org")
+diff --git a/Code/PgSQL/rdkit/CMakeLists.txt b/Code/PgSQL/rdkit/CMakeLists.txt
+index ccd1d77..6706bda 100644
+--- a/Code/PgSQL/rdkit/CMakeLists.txt
++++ b/Code/PgSQL/rdkit/CMakeLists.txt
+@@ -226,14 +226,19 @@ foreach(testDir sql data expected)
+       COMMAND "${CMAKE_COMMAND}" -E copy_directory
+       "${PG_CURRENT_SOURCE_DIR}${testDir}" "${PG_CURRENT_BINARY_DIR}${testDir}")
+ endforeach()
+-message("\n"
+-    "=====================================================================\n"
+-    "After building, check\n"
+-    "${installPgSQLName}\n"
+-    "for correctness of installation paths. If everything is OK, gain \n"
+-    "administrator privileges, stop the PostgreSQL service, run\n"
+-    "${installPgSQLName}\n"
+-    "to install the PostgreSQL RDKit cartridge, then start again\n"
+-    "the PostgreSQL service\n"
+-    "=====================================================================\n")
++if(RDK_INSTALL_INTREE)
++    message("\n"
++        "=====================================================================\n"
++        "After building, check\n"
++        "${installPgSQLName}\n"
++        "for correctness of installation paths. If everything is OK, gain \n"
++        "administrator privileges, stop the PostgreSQL service, run\n"
++        "${installPgSQLName}\n"
++        "to install the PostgreSQL RDKit cartridge, then start again\n"
++        "the PostgreSQL service\n"
++        "=====================================================================\n")
++else(RDK_INSTALL_INTREE)
++    install(FILES "${PG_CURRENT_BINARY_DIR}${EXTENSION}--${PG_EXTVERSION}.sql" "${PG_CURRENT_SOURCE_DIR}${EXTENSION}.control" DESTINATION "${PG_EXTENSIONDIR}" COMPONENT pgsql)
++    install(FILES "${PG_CURRENT_BINARY_DIR}${PG_RDKIT_LIB_SRC}" DESTINATION "${PG_PKGLIBDIR}" RENAME "${PG_RDKIT_LIB_DEST}" COMPONENT pgsql)
++endif(RDK_INSTALL_INTREE)
+ add_test(testPgSQL ${testPgSQLCommand} ${testPgSQLName})
