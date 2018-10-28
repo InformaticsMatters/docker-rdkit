@@ -75,12 +75,16 @@ Read smiles: c1ccccc1 Number of atoms: 6
 We have now started to handle the RDKit postgres cartridge in a debian environment as a series of `informaticsmatters/rdkit-cartridge-debian` images.
 This started with the `Release_2018_09` images. 
 
-If you want to use the cartridge in the `informaticsmatters/rdkit-build:latest` image then try something like this:
+If you want to use the cartridge in the `informaticsmatters/rdkit-cartridge-debian:latest` image then try something like this.
+
 
 ```
-$ docker run -it --rm -u postgres informaticsmatters/rdkit-cartridge-debian:latest bash
-postgres@db485abc2f02:/rdkit$ service postgresql start
-[ ok ] Starting PostgreSQL 10 database server: main.
+# start the container
+$ docker run -d --name rdkitcartridge informaticsmatters/rdkit-cartridge-debian:latest
+
+# connect to the container
+$ docker exec -it -u postgres rdkitcartridge bash
+# run psql and create a database
 postgres@db485abc2f02:/rdkit$ psql 
 psql (10.4 (Debian 10.4-2))
 Type "help" for help.
@@ -88,6 +92,7 @@ Type "help" for help.
 postgres=# create database rdkit;
 CREATE DATABASE
 postgres=# \q
+# connect again to that database and install the cartridge
 postgres@db485abc2f02:/rdkit$ psql -d rdkit
 psql (10.4 (Debian 10.4-2))
 Type "help" for help.
@@ -98,8 +103,8 @@ rdkit=# \q
 ```
 
 Notes:
-1. The postgresql service is not started by default in this image. Hence why its necessary to run `service postgresql start`.
-2. You must initially connect to the database as the `postgres` user, hence the need for the `-u postgres` option for the `docker run` command.
+
+1. You must initially connect to the database as the `postgres` user, hence the need for the `-u postgres` option for the `docker exec` command.
 
 ## Hopefully coming soon
 
