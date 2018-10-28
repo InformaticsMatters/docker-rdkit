@@ -1,7 +1,6 @@
 # Dockerfiles for building RDKit.
 
-**IMPORTANT** these contents are currently experimental but are expected to superceed the existing informaticsmatters/rdkit*
-Docker images.
+These images superceed the existing informaticsmatters/rdkit* Docker images.
 
 These Dockerfiles and shell scripts are for building various Docker images for RDKit. The aim is to build a number of lightweight images that are suited for running in production cloud environments like Kubernetes and OpenShift. For this purpose the images need to be:
 
@@ -20,6 +19,7 @@ For each RDKit version (image tag) we build a number of images:
 * [informaticsmatters/rdkit-java-debian](https://hub.docker.com/r/informaticsmatters/rdkit-java-debian/) - a Debian based distribution designed for running RDKit from Java. The image size is 
 approx 350MB.
 * [informaticsmatters/rdkit-tomcat-debian](https://hub.docker.com/r/informaticsmatters/rdkit-tomcat-debian/) -  a Debian based distribution designed for running a servlet in Apache Tomcat that uses the RDKit Java bindings. You need to provide the war file with the web application. The image size is approx 370MB.
+* [informaticsmatters/rdkit-cartridge-debian](https://hub.docker.com/r/informaticsmatters/rdkit-cartridge-debian/) -  a Debian based distribution with PostgreSQL and the RDKit cartridge. Note: this is new and largely untested.
 
 ## Branches
 
@@ -28,6 +28,8 @@ approx 350MB.
 * `Release_2018_03` - build from RDKit Release_2018_03 branch and occasionally rebuilt as the code gets updated. Images have tag of `Release_2018_03`.
 * `Release_2018_03_1` - build from RDKit Release_2018_03_1 release tag. These images should never change [1]. Images have tag of `Release_2018_03_1` [2].
 * `Release_2018_03_2` - build from RDKit Release_2018_03_2 release tag. These images should never change [1]. Images have tag of `Release_2018_03_2`.
+* `Release_2018_09` - build from RDKit Release_2018_09 branch and occasionally rebuilt as the code gets updated. Images have tag of `Release_2018_09`.
+* `Release_2018_09_1` - build from RDKit Release_2018_09_1 release tag. These images should never change [1]. Images have tag of `Release_2018_09_1`
 
 [1] Where we say that the images should never change what we really mean in that the RDKit content should never change. We may rebuild these images occasionally when we find further improvements, and the underlying Centos/Debian packages may be updated, but the RDKit code should be exactly the same.
 
@@ -70,13 +72,13 @@ Read smiles: c1ccccc1 Number of atoms: 6
 
 ## RDKit cartridge
 
-Efforts are now underway to extend this process to handle the RDKit postgres cartridge.
-So far the build and installation of the cartridge in the `rdkit-build` image is working, but the RPM and DEB packages are not being built.
-We hope to solve this soon so that we can create a series of `informaticsmatters/rdkit-postgresql` images.
+We have now started to handle the RDKit postgres cartridge in a debian environment as a series of `informaticsmatters/rdkit-cartridge-debian` images.
+This started with the `Release_2018_09` images. 
 
 If you want to use the cartridge in the `informaticsmatters/rdkit-build:latest` image then try something like this:
+
 ```
-$ docker run -it --rm -u postgres informaticsmatters/rdkit-build:latest bash
+$ docker run -it --rm -u postgres informaticsmatters/rdkit-cartridge-debian:latest bash
 postgres@db485abc2f02:/rdkit$ service postgresql start
 [ ok ] Starting PostgreSQL 10 database server: main.
 postgres@db485abc2f02:/rdkit$ psql 
@@ -96,13 +98,13 @@ rdkit=# \q
 ```
 
 Notes:
-1. The postgresql service is not started by default in this image as typically it will not be used. Hence why its necessary to run `service postgresql start`.
+1. The postgresql service is not started by default in this image. Hence why its necessary to run `service postgresql start`.
 2. You must initially connect to the database as the `postgres` user, hence the need for the `-u postgres` option for the `docker run` command.
 
 ## Hopefully coming soon
 
 * Tests for built images.
-* Images for RDKit cartridge.
+* Centos based images.
 
 Requests also welcome!
 
