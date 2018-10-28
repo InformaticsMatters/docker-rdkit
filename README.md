@@ -109,7 +109,8 @@ Notes:
 ## Hopefully coming soon
 
 * Tests for built images.
-* Centos based images.
+* Centos based images. Currently these can't be built as RDKit needs a more recent version of boost (1.56) than is present in the Centos repositories
+(1.53) and we have not yet found a clean way round this.
 
 Requests also welcome!
 
