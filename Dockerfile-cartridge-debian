@@ -1,12 +1,20 @@
-# Dockerfile for Python based RDKit implementation
-# Based on Debian.
+# Dockerfile for RDKit cartridge based on Debian.
+# This image is inspired by the docker.io:/library/postgres image, and uses the docker-entrypoint.sh 
+# file from there, but there is a need to have the exact same versions of libraries that were used to 
+# build the deb packages so we need to install the packages using apt to have tight control over this.
+#
 
-FROM postgres:10
+FROM debian:buster
 LABEL maintainer="Tim Dudgeon<tdudgeon@informaticsmatters.com>"
 
+ENV PG_MAJOR=10
+ARG DOCKER_TAG=latest
+
 RUN apt-get update &&\
- #apt-get upgrade -y &&\ 
+ apt-get upgrade -y &&\ 
  apt-get install -y --no-install-recommends\
+ python\
+ python-numpy\
  libboost-system1.62.0\
  libboost-thread1.62.0\
  libboost-serialization1.62.0\
@@ -15,24 +23,40 @@ RUN apt-get update &&\
  libboost-chrono1.62.0\
  libboost-date-time1.62.0\
  libboost-atomic1.62.0\
+ postgresql-$PG_MAJOR\
+ postgresql-client-$PG_MAJOR\
+ postgresql-plpython-$PG_MAJOR\
+ gosu\
  wget\
  zip &&\
  apt-get clean -y
 
-ARG DOCKER_TAG=latest
-
 COPY\
   artifacts/debian/$DOCKER_TAG/debs/RDKit-*-Linux-Runtime.deb\
+  artifacts/debian/$DOCKER_TAG/debs/RDKit-*-Linux-Python.deb\
   artifacts/debian/$DOCKER_TAG/debs/RDKit-*-Linux-PgSQL.deb\
   /tmp/
 RUN dpkg -i /tmp/*.deb && rm -f /tmp/*.deb
 
-# For some unexplicable reason doing `apt-get upgrade` during the inital process results in python-numpy being downgraded 
-# and RDKit not working. But doing it here doesn't give problems.
-#RUN apt-get upgrade -y
-
 WORKDIR /
 
-# add the rdkit user
-#RUN useradd -u 1000 -g 0 -m rdkit
-#USER 1000
+# make the sample config easier to munge (and "correct by default")
+RUN mv -v "/usr/share/postgresql/$PG_MAJOR/postgresql.conf.sample" /usr/share/postgresql/ \
+	&& ln -sv ../postgresql.conf.sample "/usr/share/postgresql/$PG_MAJOR/" \
+	&& sed -ri "s!^#?(listen_addresses)\s*=\s*\S+.*!\1 = '*'!" /usr/share/postgresql/postgresql.conf.sample
+
+RUN mkdir -p /var/run/postgresql && chown -R postgres:postgres /var/run/postgresql && chmod 2777 /var/run/postgresql
+
+ENV PGDATA /var/lib/postgresql/data
+ENV PATH $PATH:/usr/lib/postgresql/$PG_MAJOR/bin
+RUN mkdir -p "$PGDATA" && chown -R postgres:postgres "$PGDATA" && chmod 777 "$PGDATA" # this 777 will be replaced by 700 at runtime (allows semi-arbitrary "--user" values)
+VOLUME /var/lib/postgresql/data
+
+COPY docker-entrypoint-cartridge.sh /usr/local/bin/docker-entrypoint.sh
+RUN ln -s usr/local/bin/docker-entrypoint.sh / # backwards compat
+ENTRYPOINT ["docker-entrypoint.sh"]
+
+EXPOSE 5432
+CMD ["postgres"]
+
+

@@ -1,4 +1,5 @@
 export DOCKER_TAG=latest
+export GIT_REPO=https://github.com/rdkit/rdkit.git
 export GIT_BRANCH=master
 
 export BASE=informaticsmatters

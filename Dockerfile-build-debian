@@ -34,15 +34,16 @@ RUN apt-get update &&\
   unzip rpm &&\
   apt-get clean -y
 
+ARG GIT_REPO
 ARG GIT_BRANCH=master
 ARG GIT_TAG
+ARG DATE
 
-RUN if [ $GIT_TAG ]; then echo "Checking out tag $GIT_TAG from branch $GIT_BRANCH"; else echo "Checking out branch $GIT_BRANCH"; fi &&\
-  git clone -b $GIT_BRANCH --single-branch https://github.com/rdkit/rdkit.git &&\
+RUN if [ $GIT_TAG ]; then echo "$DATE Checking out tag $GIT_TAG from repo $GIT_REPO branch $GIT_BRANCH"; else echo "$DATE Checking out repo $GIT_REPO branch $GIT_BRANCH"; fi
+RUN git clone -b $GIT_BRANCH --single-branch $GIT_REPO &&\
   if [ $GIT_TAG ]; then cd rdkit && git fetch --tags && git checkout $GIT_TAG; fi
 
 # hack to build cartridge packages. can be removed once this code hits the repo
-#COPY cart_patch/ /rdkit 
 COPY patch_pgsql_rpm.patch /rdkit
 RUN cd /rdkit && patch -p1 < patch_pgsql_rpm.patch
 
@@ -65,14 +66,14 @@ RUN cmake -Wno-dev\
   -DPostgreSQL_ROOT=/usr/lib/postgresql/10\
   -DPostgreSQL_TYPE_INCLUDE_DIR=/usr/include/postgresql/10/server\
   -DCMAKE_INSTALL_PREFIX=/usr\
+  -DCPACK_PACKAGE_RELOCATABLE=OFF\
   ..
 
 RUN nproc=$(getconf _NPROCESSORS_ONLN)\
   && make -j $(( nproc > 2 ? nproc - 2 : 1 ))\
   && make install\
   && sh Code/PgSQL/rdkit/pgsql_install.sh\
-  && cpack -G DEB\
-  && cpack -G RPM
+  && cpack -G DEB
 
 WORKDIR $RDBASE
 
