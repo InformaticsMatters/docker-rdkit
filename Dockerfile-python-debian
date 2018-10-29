@@ -13,6 +13,7 @@ RUN apt-get update &&\
  python-pip\
  python-setuptools\
  python-wheel\
+ python-six\
  gcc\
  libboost-system1.62.0\
  libboost-thread1.62.0\
