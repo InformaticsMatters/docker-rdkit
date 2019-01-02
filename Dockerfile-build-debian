@@ -6,6 +6,12 @@
 FROM debian:buster
 LABEL maintainer="Tim Dudgeon<tdudgeon@informaticsmatters.com>"
 
+ARG GIT_REPO
+ARG GIT_BRANCH=master
+ARG GIT_TAG
+ARG DATE
+ARG POSTGRES_VERSION=11
+
 RUN apt-get update &&\
   #apt-get upgrade -y &&\
   apt-get install -y --no-install-recommends \
@@ -17,27 +23,22 @@ RUN apt-get update &&\
   sqlite3\
   libsqlite3-dev\
   libboost-dev\
-  libboost-system-dev\
-  libboost-thread-dev\
-  libboost-serialization-dev\
-  libboost-python-dev\
-  libboost-regex-dev\
+  libboost-system1.67-dev\
+  libboost-thread1.67-dev\
+  libboost-serialization1.67-dev\
+  libboost-python1.67-dev\
+  libboost-regex1.67-dev\
   swig\
   libeigen3-dev\
   git\
   wget\
   openjdk-8-jdk\
-  postgresql-10\
-  postgresql-server-dev-10\
-  postgresql-plpython-10\
+  postgresql-$POSTGRES_VERSION\
+  postgresql-server-dev-$POSTGRES_VERSION\
+  postgresql-plpython-$POSTGRES_VERSION\
   zip\
   unzip rpm &&\
   apt-get clean -y
-
-ARG GIT_REPO
-ARG GIT_BRANCH=master
-ARG GIT_TAG
-ARG DATE
 
 RUN if [ $GIT_TAG ]; then echo "$DATE Checking out tag $GIT_TAG from repo $GIT_REPO branch $GIT_BRANCH"; else echo "$DATE Checking out repo $GIT_REPO branch $GIT_BRANCH"; fi
 RUN git clone -b $GIT_BRANCH --single-branch $GIT_REPO &&\
@@ -63,17 +64,17 @@ RUN cmake -Wno-dev\
   -DRDK_BUILD_PYTHON_WRAPPERS=ON\
   -DRDK_BUILD_SWIG_WRAPPERS=ON\
   -DRDK_BUILD_PGSQL=ON\
-  -DPostgreSQL_ROOT=/usr/lib/postgresql/10\
-  -DPostgreSQL_TYPE_INCLUDE_DIR=/usr/include/postgresql/10/server\
+  -DPostgreSQL_ROOT=/usr/lib/postgresql/$POSTGRES_VERSION\
+  -DPostgreSQL_TYPE_INCLUDE_DIR=/usr/include/postgresql/$POSTGRES_VERSION/server\
   -DCMAKE_INSTALL_PREFIX=/usr\
   -DCPACK_PACKAGE_RELOCATABLE=OFF\
   ..
 
 RUN nproc=$(getconf _NPROCESSORS_ONLN)\
-  && make -j $(( nproc > 2 ? nproc - 2 : 1 ))\
-  && make install\
-  && sh Code/PgSQL/rdkit/pgsql_install.sh\
-  && cpack -G DEB
+  && make -j $(( nproc > 2 ? nproc - 2 : 1 ))
+RUN make install
+RUN sh Code/PgSQL/rdkit/pgsql_install.sh
+RUN cpack -G DEB
 
 WORKDIR $RDBASE
 

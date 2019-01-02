@@ -1,7 +1,7 @@
 # Dockerfile for Java based RDKit implementation
 # Based on Debian.
 
-FROM informaticsmatters/tomcat:8.0-jre8
+FROM informaticsmatters/tomcat:8.5-jre8
 LABEL maintainer="Tim Dudgeon<tdudgeon@informaticsmatters.com>"
 
 USER root
@@ -9,13 +9,13 @@ USER root
 RUN apt-get update &&\
  apt-get upgrade -y &&\ 
  apt-get install -y --no-install-recommends\
- libboost-system1.62.0\
- libboost-thread1.62.0\
- libboost-serialization1.62.0\
- libboost-regex1.62.0\
- libboost-chrono1.62.0\
- libboost-date-time1.62.0\
- libboost-atomic1.62.0 &&\
+ libboost-system1.67.0\
+ libboost-thread1.67.0\
+ libboost-serialization1.67.0\
+ libboost-regex1.67.0\
+ libboost-chrono1.67.0\
+ libboost-date-time1.67.0\
+ libboost-atomic1.67.0 &&\
  apt-get clean -y
 
 ARG DOCKER_TAG=latest
@@ -24,11 +24,12 @@ COPY artifacts/debian/$DOCKER_TAG/java/* /rdkit/gmwrapper/
 COPY artifacts/debian/$DOCKER_TAG/debs/RDKit-*-Linux-Runtime.deb /tmp/
 RUN dpkg -i /tmp/*.deb && rm -f /tmp/*.deb
 
+USER 501
+
 WORKDIR $CATALINA_HOME
 ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64
 ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/rdkit/gmwrapper
 ENV CLASSPATH=/rdkit/gmwrapper/org.RDKit.jar
-USER 1000
 
 RUN echo "CLASSPATH=/rdkit/gmwrapper/org.RDKit.jar\n" > /usr/local/tomcat/bin/setenv.sh
 

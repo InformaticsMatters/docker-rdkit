@@ -15,14 +15,14 @@ RUN apt-get update &&\
  python-wheel\
  python-six\
  gcc\
- libboost-system1.62.0\
- libboost-thread1.62.0\
- libboost-serialization1.62.0\
- libboost-python1.62.0\
- libboost-regex1.62.0\
- libboost-chrono1.62.0\
- libboost-date-time1.62.0\
- libboost-atomic1.62.0\
+ libboost-system1.67.0\
+ libboost-thread1.67.0\
+ libboost-serialization1.67.0\
+ libboost-python1.67.0\
+ libboost-regex1.67.0\
+ libboost-chrono1.67.0\
+ libboost-date-time1.67.0\
+ libboost-atomic1.67.0\
  sqlite3\
  wget\
  zip &&\
