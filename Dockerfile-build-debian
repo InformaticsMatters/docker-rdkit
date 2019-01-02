@@ -9,8 +9,15 @@ LABEL maintainer="Tim Dudgeon<tdudgeon@informaticsmatters.com>"
 ARG GIT_REPO
 ARG GIT_BRANCH=master
 ARG GIT_TAG
-ARG DATE
-ARG POSTGRES_VERSION=11
+ARG POSTGRES_VERSION=10
+
+# This adds the postgres apt repos as postgresql-10 is not available for buster 
+# and postgresql-11 does not seem to work with RDKit yet.
+#
+RUN apt-get update &&\
+ apt-get -y install curl ca-certificates gnupg &&\
+ curl https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - &&\
+ echo "deb http://apt.postgresql.org/pub/repos/apt/ buster-pgdg main" >  /etc/apt/sources.list.d/pgdg.list
 
 RUN apt-get update &&\
   #apt-get upgrade -y &&\
@@ -37,10 +44,10 @@ RUN apt-get update &&\
   postgresql-server-dev-$POSTGRES_VERSION\
   postgresql-plpython-$POSTGRES_VERSION\
   zip\
-  unzip rpm &&\
+  unzip &&\
   apt-get clean -y
 
-RUN if [ $GIT_TAG ]; then echo "$DATE Checking out tag $GIT_TAG from repo $GIT_REPO branch $GIT_BRANCH"; else echo "$DATE Checking out repo $GIT_REPO branch $GIT_BRANCH"; fi
+RUN if [ $GIT_TAG ]; then echo "Checking out tag $GIT_TAG from repo $GIT_REPO branch $GIT_BRANCH"; else echo "Checking out repo $GIT_REPO branch $GIT_BRANCH"; fi
 RUN git clone -b $GIT_BRANCH --single-branch $GIT_REPO &&\
   if [ $GIT_TAG ]; then cd rdkit && git fetch --tags && git checkout $GIT_TAG; fi
 
@@ -71,10 +78,10 @@ RUN cmake -Wno-dev\
   ..
 
 RUN nproc=$(getconf _NPROCESSORS_ONLN)\
-  && make -j $(( nproc > 2 ? nproc - 2 : 1 ))\
-  && make install\
-  && sh Code/PgSQL/rdkit/pgsql_install.sh\
-  && cpack -G DEB
+  && make -j $(( nproc > 2 ? nproc - 2 : 1 ))
+RUN make install
+RUN sh Code/PgSQL/rdkit/pgsql_install.sh
+RUN cpack -G DEB
 
 WORKDIR $RDBASE
 
