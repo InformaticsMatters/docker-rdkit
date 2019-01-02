@@ -7,7 +7,7 @@
 FROM debian:buster
 LABEL maintainer="Tim Dudgeon<tdudgeon@informaticsmatters.com>"
 
-ENV PG_MAJOR=10
+ENV PG_MAJOR=11
 ARG DOCKER_TAG=latest
 
 RUN apt-get update &&\
@@ -15,14 +15,14 @@ RUN apt-get update &&\
  apt-get install -y --no-install-recommends\
  python\
  python-numpy\
- libboost-system1.62.0\
- libboost-thread1.62.0\
- libboost-serialization1.62.0\
- libboost-python1.62.0\
- libboost-regex1.62.0\
- libboost-chrono1.62.0\
- libboost-date-time1.62.0\
- libboost-atomic1.62.0\
+ libboost-system1.67.0\
+ libboost-thread1.67.0\
+ libboost-serialization1.67.0\
+ libboost-python1.67.0\
+ libboost-regex1.67.0\
+ libboost-chrono1.67.0\
+ libboost-date-time1.67.0\
+ libboost-atomic1.67.0\
  postgresql-$PG_MAJOR\
  postgresql-client-$PG_MAJOR\
  postgresql-plpython-$PG_MAJOR\
