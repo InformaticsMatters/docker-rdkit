@@ -57,7 +57,6 @@ ARG RDKIT_BRANCH=master
 RUN git clone -b $RDKIT_BRANCH --single-branch https://github.com/rdkit/rdkit.git
 
 # hack to build cartridge packages. can be removed once this code hits the repo
-#COPY cart_patch/ /rdkit 
 COPY patch_pgsql_rpm.patch /rdkit
 RUN cd /rdkit && patch -p1 < patch_pgsql_rpm.patch
 

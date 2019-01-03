@@ -1,13 +1,28 @@
 #!/bin/bash
-# Attempt to do a centos based build
-# NOTE - this does not yet work correctly. Use build.sh which is debian based instead.
+# 
+# centos based build
+#
+# NOTE - this is a bit a a hack as Centos7 comes with boost version 1.53, and several
+# of the required libraries require this version, but recent RDKit builds (since the 
+# switch to modern C++) require boost 1.56 or later.
+# The solution is to build boost binaries for 1.56 so that RDKit can be built against
+# those and to copy those binaries into the destination image, and to use the --nodeps
+# option when rpm installing the RDKit RPMs.
+# The resulting image has both versions of boost in /usr/lib64 and RDKit seems to be
+# quite happy with this.
+#
+# Credit to Paolo Tosco for helping to work out a strategy for this. 
+#
+# Currently Java and Cartridge images are not built to limit the complexity. Use the
+# debain based images if you need these.
+
 
 set -ex
 
 source params.sh
 
 # build RDKit
-docker build -f Dockerfile-build-centos\
+docker build --no-cache -f Dockerfile-build-centos\
   -t $BASE/rdkit-build:$DOCKER_TAG\
   --build-arg RDKIT_BRANCH=$GIT_BRANCH .
 
@@ -23,7 +38,7 @@ docker run -it --rm -u $(id -u)\
 # cp Code/JavaWrappers/gmwrapper/org.RDKit.jar /tohere/java && cp Code/JavaWrappers/gmwrapper/libGraphMolWrap.so /tohere/java && 
 
 # build image for python
-docker build -f Dockerfile-python-centos\
+docker build --no-cache -f Dockerfile-python-centos\
   -t $BASE/rdkit-python-centos:$DOCKER_TAG\
   --build-arg TAG=$DOCKER_TAG .
 echo "Built image informaticsmatters/rdkit-python-centos:$DOCKER_TAG"
