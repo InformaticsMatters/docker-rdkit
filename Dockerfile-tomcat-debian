@@ -9,6 +9,7 @@ USER root
 RUN apt-get update &&\
  apt-get upgrade -y &&\ 
  apt-get install -y --no-install-recommends\
+ unzip\
  libboost-system1.67.0\
  libboost-thread1.67.0\
  libboost-serialization1.67.0\
