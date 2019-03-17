@@ -1,0 +1,34 @@
+# Builds Docker image for use with buildah.
+# Create with something like this:
+# docker build -f Dockerfile-buildah .
+# docker tag b8bc8c47ce3f informaticsmatters/rdkit-buildah:latest
+
+FROM fedora:29
+LABEL maintainer="Tim Dudgeon<tdudgeon@informaticsmatters.com>"
+
+
+RUN dnf -y update && dnf -y upgrade && dnf -y install\
+ gcc-c++\
+ python3-devel\
+ boost-devel\
+ boost-python3-devel\
+ eigen3-devel\
+ cmake\
+ tk-devel\
+ readline-devel\
+ zlib-devel\
+ bzip2-devel\
+ sqlite-devel\
+ @development-tools\
+ swig\
+ git\
+ zip\
+ wget\
+ java-1.8.0-openjdk-devel\
+ cairo-devel\
+ buildah &&\
+ dnf clean all &&\
+ rm -rf /var/cache/dnf
+
+ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+
