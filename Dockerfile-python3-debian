@@ -35,7 +35,7 @@ COPY artifacts/debian/$DOCKER_TAG/debs/RDKit-*-Linux-Runtime.deb artifacts/debia
 RUN dpkg -i /tmp/*.deb && rm -f /tmp/*.deb
 
 # symlink python3 to python
-RUN cd /usr/bin && ln -s python3 python
+RUN cd /usr/bin && ln -s python3 python && ln -s pip3 pip
 
 WORKDIR /
 
