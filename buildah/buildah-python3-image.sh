@@ -23,8 +23,6 @@ echo "Using image tag $IMAGE_TAG"
 
 export IMAGE_NAME="informaticsmatters/rdkit-python3-mini"
 
-cd /root/rdkit/build
-
 # build the python container based on the base image
 export newcontainer=$(buildah from scratch)
 export scratchmnt=$(buildah mount $newcontainer)
@@ -46,11 +44,16 @@ dnf -y install\
   unzip\
   procps-ng\
   --installroot $scratchmnt --releasever 29\
+  --setopt override_install_langs=en_US.utf8\
   --setopt install_weak_deps=false\
-  --setopt tsflags=nodocs\
-  --setopt override_install_langs=en_US.utf8
+  --setopt tsflags=nodocs
 dnf -y clean all --installroot $scratchmnt --releasever 29
 rm -rf $scratchmnt/var/cache/dnf
+
+# create a symlink that allows to run python3 as python
+cd $scratchmnt/usr/bin && ln -s python3 python
+
+cd /root/rdkit/build
 
 # install RDKit into the python container
 make DESTDIR=$scratchmnt install

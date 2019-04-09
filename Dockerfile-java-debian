@@ -8,14 +8,15 @@ LABEL maintainer="Tim Dudgeon<tdudgeon@informaticsmatters.com>"
 RUN apt-get update &&\
  apt-get upgrade -y &&\
  apt-get install -y --no-install-recommends\
- openjdk-8-jre-headless\
+ openjdk-11-jre-headless\
  libboost-system1.67.0\
  libboost-thread1.67.0\
  libboost-serialization1.67.0\
  libboost-regex1.67.0\
  libboost-chrono1.67.0\
  libboost-date-time1.67.0\
- libboost-atomic1.67.0 &&\
+ libboost-atomic1.67.0\
+ libboost-iostreams1.67.0 &&\
  apt-get clean -y
 
 ARG DOCKER_TAG=latest
@@ -25,7 +26,7 @@ COPY artifacts/debian/$DOCKER_TAG/debs/RDKit-*-Linux-Runtime.deb /tmp/
 RUN dpkg -i /tmp/*.deb && rm -f /tmp/*.deb
 WORKDIR / 
 
-ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64
+ENV JAVA_HOME /usr/lib/jvm/java-11-openjdk-amd64
 ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/rdkit/gmwrapper
 ENV CLASSPATH=/rdkit/gmwrapper/org.RDKit.jar
 ENV RDBASE=/usr/lib

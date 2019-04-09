@@ -22,11 +22,11 @@ docker run -it --rm -u $(id -u)\
   -v $PWD/artifacts/debian/$DOCKER_TAG:/tohere:Z\
   $BASE/rdkit-build:$DOCKER_TAG bash -c 'cp build/*.deb /tohere/debs && cp Code/JavaWrappers/gmwrapper/org.RDKit.jar /tohere/java && cp Code/JavaWrappers/gmwrapper/libGraphMolWrap.so /tohere/java'
 
-# build image for python on debian
-docker build $DBO -f Dockerfile-python-debian\
-  -t $BASE/rdkit-python-debian:$DOCKER_TAG\
+# build image for python3 on debian
+docker build $DBO -f Dockerfile-python3-debian\
+  -t $BASE/rdkit-python3-debian:$DOCKER_TAG\
   --build-arg DOCKER_TAG=$DOCKER_TAG .
-echo "Built image informaticsmatters/rdkit-python-debian:$DOCKER_TAG"
+echo "Built image informaticsmatters/rdkit-python3-debian:$DOCKER_TAG"
 
 # build image for java on debian
 docker build $DBO -f Dockerfile-java-debian\

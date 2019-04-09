@@ -20,7 +20,7 @@ docker build -f Dockerfile-buildah -t informaticsmatters/rdkit-buildah:latest .
 
 ### Fire up the build container
 ```
-docker run -it -v $PWD:$PWD:Z -v /var/lib/containers:/var/lib/containers --privileged -w $PWD --rm informaticsmatters/rdkit-buildah:latest bash
+docker run -it -v $PWD:$PWD:Z -v /var/lib/containers:/var/lib/containers --privileged -w $PWD --name rdkit_build informaticsmatters/rdkit-buildah:latest bash
 ```
 Note that the `var/lib/containers` directory is mounted into the container allowing it to write to the area where the host machine
 looks for images and containers. Also note that this runs as a privleged container so make sure you understand what is being built.
@@ -30,7 +30,7 @@ You should see a bash prompt from inside the container.
 ### Run the build
 Define the `RDKIT_BRANCH` environment variable that specifies the RDKit branch to use:
 ```
-export RDKIT_BRANCH=Release_2018_03_2
+export RDKIT_BRANCH=Release_2018_09_3
 ```
 
 Build RDKit from the source code on that branch:

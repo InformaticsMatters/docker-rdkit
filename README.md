@@ -14,7 +14,8 @@ See the [Smaller containers](https://www.informaticsmatters.com/category/contain
 For each RDKit version (image tag) we build a number of images:
 
 * [informaticsmatters/rdkit-build](https://hub.docker.com/r/informaticsmatters/rdkit-build/) - this does a full build of RDKit from source. The result is a kitchen sink image (almost 2GB in size) that contains the entire build infrastructure and eveything that is built. The main purpose of this image is to build the artifacts needed for assembling the other lightweight images. Whist this image might be of some use for personal hacking it is NOT suitable for a public facing system as it is so large and has such a big attack surface.
-* [informaticsmatters/rdkit-python-debian](https://hub.docker.com/r/informaticsmatters/rdkit-python-debian/) - a Debian based distribution designed for running RDKit from Python 2.7. The image size is approx 400MB.
+* [informaticsmatters/rdkit-python-debian](https://hub.docker.com/r/informaticsmatters/rdkit-python-debian/) - a Debian based distribution designed for running RDKit from Python 2.7. The image size is approx 400MB. The last Python 2 images are for the `Release_2018_09` release.
+* [informaticsmatters/rdkit-python3-debian](https://hub.docker.com/r/informaticsmatters/rdkit-python-debian/) - a Debian based distribution designed for running RDKit from Python 3.7. Thes images start from the `Release_2019_03` release.
 * [informaticsmatters/rdkit-python-centos](https://hub.docker.com/r/informaticsmatters/rdkit-python-centos/) - a Centos7 based distribution designed for running RDKit from Python 2.7.
 * [informaticsmatters/rdkit-java-debian](https://hub.docker.com/r/informaticsmatters/rdkit-java-debian/) - a Debian based distribution designed for running RDKit from Java. The image size is 
 approx 350MB.
@@ -69,6 +70,12 @@ docker run -it --rm -v $PWD/java_src:/example:Z -u root informaticsmatters/rdkit
 RDKit version: 2018.03.1.dev1
 Read smiles: c1ccccc1 Number of atoms: 6
 ```
+
+## Python 3
+
+Starting with the `Release_2019_03` release RDKit only supports Python 3.
+We are now building Python 3 versions on the master/latest branch and for the 2019_03 branch.
+Note that these imags are new and largely untested.
 
 ## RDKit cartridge
 
