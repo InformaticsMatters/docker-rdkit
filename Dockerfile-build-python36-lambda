@@ -1,0 +1,92 @@
+# Dockerfile for building RDKit artifacts.
+# This is a heavyweight image containing all aspects of RDKit plus the build system.
+# It's purpose is to create the RDKit artifacts that will be deployed to lighter weigth images.
+
+
+FROM lambci/lambda:build-python3.6 
+
+# centos currently only comes with boost 1.53 which is no good for RDKit.
+# so as a temp measure we exclude installing the boost packages and instead build from source.
+# We can revert this once updated boost packages are available.
+
+RUN yum install -y --enablerepo=epel --setopt=tsflags=nodocs --setopt=override_install_langs=en_US.utf8\
+#  tk-devel\
+  readline-devel\
+  zlib-devel\
+  bzip2-devel\
+  sqlite-devel\
+  @development\
+  cmake3\
+  #boost\
+  #boost-python\
+  #boost-devel\
+  eigen3\
+  eigen3-devel\
+  swig\
+  git\
+  yum clean all &&\
+  rm -rf /var/cache/yum
+
+RUN ln -sf /var/lang/bin/python3.6 /usr/bin/python
+RUN ln -sf /var/lang/bin/python3.6 /usr/bin/python3
+RUN ln -s /var/lang/include/python3.6m /var/lang/include/python3.6
+
+RUN pip install numpy
+
+# Here we build boost from source.
+# This will be unnecessary once updated boost packages are available.
+WORKDIR /root/boost
+RUN curl -L -o boost.tgz http://sourceforge.net/projects/boost/files/boost/1.56.0/boost_1_56_0.tar.gz &&\
+  tar xfz boost.tgz &&\
+  rm -f boost.tgz &&\
+  cd boost_1_56_0 &&\
+  ./bootstrap.sh --with-libraries=python,serialization &&\
+  ./b2 install
+
+# Tar up the built libraries (which have been installed into /usr/local/lib)
+# as we'll need them for the runtime images.
+# They need to go in /usr/lib64
+WORKDIR /usr/local/lib
+RUN  tar cvfz /root/boost-1.56.0.tgz libboost*so.*
+
+WORKDIR /
+
+# Clone the RDKit repo and do the build
+ARG RDKIT_BRANCH=master
+RUN git clone -b $RDKIT_BRANCH --single-branch https://github.com/rdkit/rdkit.git
+
+# hack to build cartridge packages. can be removed once this code hits the repo
+COPY patch_pgsql_rpm.patch /rdkit
+RUN cd /rdkit && patch -p1 < patch_pgsql_rpm.patch
+
+ENV RDBASE=/rdkit
+ENV JAVA_HOME=/usr/lib/jvm/java
+ENV CLASSPATH=$RDBASE/Code/JavaWrappers/gmwrapper/org.RDKit.jar
+
+RUN mkdir $RDBASE/build
+WORKDIR $RDBASE/build
+
+RUN cmake3 -Wno-dev\
+  -DPYTHON_EXECUTABLE=/var/lang/bin/python3.6\
+  -DPYTHON_INCLUDE_DIR=/var/lang/include/python3.6\
+  -DPYTHON_LIBRARY=/var/lang/lib/python3.6/config-3.6m-x86_64-linux-gnu/libpython3.6m.a\
+  -DBOOST_ROOT=/root/boost/boost_1_56_0\
+  -DLIB_SUFFIX=64\
+  -DRDK_INSTALL_INTREE=OFF\
+  -DRDK_BUILD_INCHI_SUPPORT=ON\
+  -DRDK_BUILD_AVALON_SUPPORT=ON\
+  -DRDK_BUILD_PYTHON_WRAPPERS=ON\
+  -DRDK_BUILD_SWIG_WRAPPERS=OFF\
+  -DCMAKE_INSTALL_PREFIX=/usr\
+  ..
+
+RUN nproc=$(getconf _NPROCESSORS_ONLN)\
+  && make -j $(( nproc > 2 ? nproc - 2 : 1 ))\
+#  && make install\
+  && cpack3 -G RPM
+
+ENV CLASSPATH=$RDBASE/Code/JavaWrappers/gmwrapper/org.RDKit.jar
+ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$RDBASE/lib:$RDBASE/Code/JavaWrappers/gmwrapper:/usr/lib/x86_64-linux-gnu
+ENV PYTHONPATH=$PYTHONPATH:$RDBASE
+WORKDIR $RDBASE
+
