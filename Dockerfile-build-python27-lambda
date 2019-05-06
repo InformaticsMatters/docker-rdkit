@@ -1,16 +1,16 @@
 # Dockerfile for building RDKit artifacts.
-# This is a heavyweight image containing all aspects of RDKit plus the build system.
-# It's purpose is to create the RDKit artifacts that will be deployed to lighter weigth images.
+# This image contains all aspects of RDKit plus the build system.
+# Its purpose is to create the RDKit artifacts that will be deployed to AWS Lambda.
 
-
+# The LambCI project provides a number of Docker images that closely mimic the
+# AWS Lambda environment.  More details here: https://github.com/lambci/docker-lambda
 FROM lambci/lambda:build-python2.7 
 
-# centos currently only comes with boost 1.53 which is no good for RDKit.
-# so as a temp measure we exclude installing the boost packages and instead build from source.
+# AWS Lambda is based on CentOS, which only provides Boost 1.53 and does not work with RDKit.
+# For the time being, exclude installing the boost packages and instead build from source.
 # We can revert this once updated boost packages are available.
 
 RUN yum install -y --enablerepo=epel --setopt=tsflags=nodocs --setopt=override_install_langs=en_US.utf8\
-#  tk-devel\
   readline-devel\
   zlib-devel\
   bzip2-devel\

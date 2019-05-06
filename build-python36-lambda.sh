@@ -39,7 +39,7 @@ docker run -it --rm -u $(id -u)\
 # build image for python
 docker build --no-cache -f Dockerfile-python36-lambda\
   -t $BASE/rdkit-python36-lambda:$DOCKER_TAG\
-  --build-arg TAG=$DOCKER_TAG .
+  --build-arg DOCKER_TAG=$DOCKER_TAG .
 echo "Built image informaticsmatters/rdkit-python36-lambda:$DOCKER_TAG"
 
 # copy the assembled layer
