@@ -1,6 +1,6 @@
 #!/bin/bash
 # 
-# centos based build
+# AWS Lambda based build
 #
 # NOTE - this is a bit a a hack as Centos7 comes with boost version 1.53, and several
 # of the required libraries require this version, but recent RDKit builds (since the 
@@ -12,10 +12,6 @@
 # quite happy with this.
 #
 # Credit to Paolo Tosco for helping to work out a strategy for this. 
-#
-# Currently Java and Cartridge images are not built to limit the complexity. Use the
-# debain based images if you need these.
-
 
 set -ex
 
