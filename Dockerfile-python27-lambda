@@ -19,7 +19,7 @@ RUN rpm --nodeps -iv /tmp/*.rpm && rm -f /tmp/*.rpm
 
 # Copy all files for the lambda layer.
 # Note this does NOT include the NumPy dependency - instead this should
-# be provided by using this layer with the AWS provided SciPy1x layer when
+# be provided by using this layer together with the public AWS SciPy1x layer when
 # creating a lambda function.
 RUN mkdir -p /tmp/layer/lib && mkdir -p /tmp/layer/python
 RUN cp -av /usr/lib64/python2.7/dist-packages/rdkit /tmp/layer/python
