@@ -52,10 +52,6 @@ WORKDIR /
 ARG RDKIT_BRANCH=master
 RUN git clone -b $RDKIT_BRANCH --single-branch https://github.com/rdkit/rdkit.git
 
-# hack to build cartridge packages. can be removed once this code hits the repo
-COPY patch_pgsql_rpm.patch /rdkit
-RUN cd /rdkit && patch -p1 < patch_pgsql_rpm.patch
-
 ENV RDBASE=/rdkit
 ENV JAVA_HOME=/usr/lib/jvm/java
 ENV CLASSPATH=$RDBASE/Code/JavaWrappers/gmwrapper/org.RDKit.jar
