@@ -1,7 +1,7 @@
 # Dockerfile for Java based RDKit implementation
 # Based on Debian.
 
-FROM informaticsmatters/tomcat:8.5-jre8
+FROM informaticsmatters/tomcat:8.5-jre11
 LABEL maintainer="Tim Dudgeon<tdudgeon@informaticsmatters.com>"
 
 USER root
@@ -16,7 +16,8 @@ RUN apt-get update &&\
  libboost-regex1.67.0\
  libboost-chrono1.67.0\
  libboost-date-time1.67.0\
- libboost-atomic1.67.0 &&\
+ libboost-atomic1.67.0\
+ libboost-iostreams1.67.0 &&\
  apt-get clean -y
 
 ARG DOCKER_TAG=latest
@@ -28,7 +29,6 @@ RUN dpkg -i /tmp/*.deb && rm -f /tmp/*.deb
 USER 501
 
 WORKDIR $CATALINA_HOME
-ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64
 ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/rdkit/gmwrapper
 ENV CLASSPATH=/rdkit/gmwrapper/org.RDKit.jar
 ENV RDBASE=/usr/lib
