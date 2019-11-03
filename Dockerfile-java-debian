@@ -32,5 +32,5 @@ ENV CLASSPATH=/rdkit/gmwrapper/org.RDKit.jar
 ENV RDBASE=/usr/lib
 
 # add the rdkit user
-RUN useradd -u 1000 -U -G 0 rdkit
+RUN useradd -u 1000 -U -G 0 -m rdkit
 USER 1000

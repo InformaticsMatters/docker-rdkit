@@ -2,7 +2,7 @@ FROM fedora:28
 
 RUN dnf -y update && dnf -y upgrade && dnf -y install\
  gcc-c++\
- python-devel\
+ python3-devel\
  boost-devel\
  eigen3-devel\
  cmake\
