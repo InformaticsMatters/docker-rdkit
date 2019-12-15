@@ -8,7 +8,7 @@ DBO=${DOCKER_BUILD_OPTS:---no-cache}
 
 # build RDKit
 docker build $DBO -f Dockerfile-build-debian\
-  -t $BASE/rdkit-build:$DOCKER_TAG\
+  -t $BASE/rdkit-build-debian:$DOCKER_TAG\
   --build-arg GIT_REPO=$GIT_REPO\
   --build-arg GIT_BRANCH=$GIT_BRANCH\
   --build-arg GIT_TAG=$GIT_TAG .
@@ -20,7 +20,7 @@ mkdir -p artifacts/debian/$DOCKER_TAG/debs
 mkdir -p artifacts/debian/$DOCKER_TAG/java
 docker run -it --rm -u $(id -u)\
   -v $PWD/artifacts/debian/$DOCKER_TAG:/tohere:Z\
-  $BASE/rdkit-build:$DOCKER_TAG bash -c 'cp build/*.deb /tohere/debs && cp Code/JavaWrappers/gmwrapper/org.RDKit.jar /tohere/java && cp Code/JavaWrappers/gmwrapper/libGraphMolWrap.so /tohere/java'
+  $BASE/rdkit-build-debian:$DOCKER_TAG bash -c 'cp build/*.deb /tohere/debs && cp Code/JavaWrappers/gmwrapper/org.RDKit.jar /tohere/java && cp Code/JavaWrappers/gmwrapper/libGraphMolWrap.so /tohere/java'
 
 # build image for python3 on debian
 docker build $DBO -f Dockerfile-python3-debian\

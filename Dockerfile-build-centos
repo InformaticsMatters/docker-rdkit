@@ -1,16 +1,15 @@
 # Dockerfile for building RDKit artifacts.
 # This is a heavyweight image containing all aspects of RDKit plus the build system.
-# It's purpose is to create the RDKit artifacts that will be deployed to lighter weigth images.
+# It's purpose is to create the RDKit artifacts that will be deployed to lighter weight images.
 
 
-FROM centos:7
+FROM centos:8
 LABEL maintainer="Tim Dudgeon<tdudgeon@informaticsmatters.com>"
 
-# centos currently only comes with boost 1.53 which is no good for RDKit.
-# so as a temp measure we exclude installing the boost packages and instead build from source.
-# We can revert this once updated boost packages are available.
+# centos8 now comes with a version of boost that is compatible with RDKit (unlike centos7).
 
-RUN yum -y install epel-release &&\
+RUN sed -i 's/enabled=0/enabled=1/' /etc/yum.repos.d/CentOS-PowerTools.repo &&\
+  yum -y install epel-release &&\
   yum update -y &&\
   yum install -y --setopt=tsflags=nodocs --setopt=override_install_langs=en_US.utf8\
   tk-devel\
@@ -20,35 +19,25 @@ RUN yum -y install epel-release &&\
   sqlite-devel\
   @development\
   cmake3\
-  python-devel\
-  numpy\
-  #boost\
-  #boost-python\
-  #boost-devel\
-  eigen3\
+  python3-devel\
+  python3-numpy\
+  boost\
+  boost-devel\
+  boost-python3\
+  boost-python3-devel\
   eigen3-devel\
   swig\
   git\
-  java-1.8.0-openjdk-devel &&\
+  wget\
+  java-11-openjdk-devel\
+  #postgresql-server\
+  #postgresql-server-devel\
+  #postgresql-plpython3\ 
+  zip\
+  unzip &&\
   yum clean all &&\
   rm -rf /var/cache/yum
 
-
-# Here we build boost from source.
-# This will be unnecessary once updated boost packages are available.
-WORKDIR /root/boost
-RUN curl -L -o boost.tgz http://sourceforge.net/projects/boost/files/boost/1.56.0/boost_1_56_0.tar.gz &&\
-  tar xfz boost.tgz &&\
-  rm -f boost.tgz &&\
-  cd boost_1_56_0 &&\
-  ./bootstrap.sh --with-libraries=python,serialization &&\
-  ./b2 install
-
-# Tar up the built libraries (which have been installed into /usr/local/lib)
-# as we'll need them for the runtime images.
-# They need to go in /usr/lib64
-WORKDIR /usr/local/lib
-RUN  tar cvfz /root/boost-1.56.0.tgz libboost*so.*
 
 WORKDIR /
 
@@ -57,30 +46,32 @@ ARG RDKIT_BRANCH=master
 RUN git clone -b $RDKIT_BRANCH --single-branch https://github.com/rdkit/rdkit.git
 
 # hack to build cartridge packages. can be removed once this code hits the repo
-COPY patch_pgsql_rpm.patch /rdkit
-RUN cd /rdkit && patch -p1 < patch_pgsql_rpm.patch
+#COPY patch_pgsql_rpm.patch /rdkit
+#RUN cd /rdkit && patch -p1 < patch_pgsql_rpm.patch
 
 ENV RDBASE=/rdkit
 ENV JAVA_HOME=/usr/lib/jvm/java
-ENV CLASSPATH=$RDBASE/Code/JavaWrappers/gmwrapper/org.RDKit.jar
 
 RUN mkdir $RDBASE/build
 WORKDIR $RDBASE/build
 
 RUN cmake3 -Wno-dev\
-  -DBOOST_ROOT=/root/boost/boost_1_56_0\
   -DLIB_SUFFIX=64\
   -DRDK_INSTALL_INTREE=OFF\
-  -DRDK_BUILD_INCHI_SUPPORT=OFF\
+  -DRDK_BUILD_INCHI_SUPPORT=ON\
   -DRDK_BUILD_AVALON_SUPPORT=ON\
   -DRDK_BUILD_PYTHON_WRAPPERS=ON\
-  -DRDK_BUILD_SWIG_WRAPPERS=OFF\
+  -DRDK_BUILD_SWIG_WRAPPERS=ON\
+#  -DRDK_BUILD_PGSQL=ON\
+#  -DPostgreSQL_ROOT=/var/lib/pgsql\
+#  -DPostgreSQL_TYPE_INCLUDE_DIR=/usr/include/pgsql/server\
   -DCMAKE_INSTALL_PREFIX=/usr\
+  -DCPACK_PACKAGE_RELOCATABLE=OFF\
   ..
 
 RUN nproc=$(getconf _NPROCESSORS_ONLN)\
-  && make -j $(( nproc > 2 ? nproc - 2 : 1 ))\
-#  && make install\
+  && make -j $(( nproc > 2 ? nproc : 1 ))\
+  && make install\
   && cpack3 -G RPM
 
 ENV CLASSPATH=$RDBASE/Code/JavaWrappers/gmwrapper/org.RDKit.jar

@@ -13,14 +13,15 @@ See the [Smaller containers](https://www.informaticsmatters.com/category/contain
 
 For each RDKit version (image tag) we build a number of images:
 
-* [informaticsmatters/rdkit-build](https://hub.docker.com/r/informaticsmatters/rdkit-build/) - this does a full build of RDKit from source. The result is a kitchen sink image (almost 2GB in size) that contains the entire build infrastructure and eveything that is built. The main purpose of this image is to build the artifacts needed for assembling the other lightweight images. Whist this image might be of some use for personal hacking it is NOT suitable for a public facing system as it is so large and has such a big attack surface.
-* [informaticsmatters/rdkit-python-debian](https://hub.docker.com/r/informaticsmatters/rdkit-python-debian/) - a Debian based distribution designed for running RDKit from Python 2.7. The image size is approx 400MB. The last Python 2 images are for the `Release_2018_09` release.
-* [informaticsmatters/rdkit-python3-debian](https://hub.docker.com/r/informaticsmatters/rdkit-python-debian/) - a Debian based distribution designed for running RDKit from Python 3.7. Thes images start from the `Release_2019_03` release.
-* [informaticsmatters/rdkit-java-debian](https://hub.docker.com/r/informaticsmatters/rdkit-java-debian/) - a Debian based distribution designed for running RDKit from Java. The image size is 
-approx 350MB.
-* [informaticsmatters/rdkit-tomcat-debian](https://hub.docker.com/r/informaticsmatters/rdkit-tomcat-debian/) -  a Debian based distribution designed for running a servlet in Apache Tomcat that uses the RDKit Java bindings. You need to provide the war file with the web application. The image size is approx 370MB.
+* [informaticsmatters/rdkit-build-debian](https://hub.docker.com/r/informaticsmatters/rdkit-build-debian/) - this does a full build of RDKit from source. The result is a kitchen sink image (almost 2GB in size) that contains the entire build infrastructure and eveything that is built. The main purpose of this image is to build the artifacts needed for assembling the other lightweight images. Whist this image might be of some use for personal hacking it is NOT suitable for a public facing system as it is so large and has such a big attack surface. Earlier versions were named `informaticsmatters/rdkit-build`.
+* [informaticsmatters/rdkit-python-debian](https://hub.docker.com/r/informaticsmatters/rdkit-python-debian/) - a Debian based distribution designed for running RDKit from Python 2. The image size is approx 400MB. The last Python 2 images are for the `Release_2018_09` release.
+* [informaticsmatters/rdkit-python3-debian](https://hub.docker.com/r/informaticsmatters/rdkit-python3-debian/) - a Debian based distribution designed for running RDKit from Python 3. Thes images start from the `Release_2019_03` release.
+* [informaticsmatters/rdkit-java-debian](https://hub.docker.com/r/informaticsmatters/rdkit-java-debian/) - a Debian based distribution designed for running RDKit from Java.
+* [informaticsmatters/rdkit-tomcat-debian](https://hub.docker.com/r/informaticsmatters/rdkit-tomcat-debian/) -  a Debian based distribution designed for running a servlet in Apache Tomcat that uses the RDKit Java bindings. You need to provide the war file with the web application.
 * [informaticsmatters/rdkit-cartridge-debian](https://hub.docker.com/r/informaticsmatters/rdkit-cartridge-debian/) -  a Debian based distribution with PostgreSQL and the RDKit cartridge. 
-* [informaticsmatters/rdkit-python-centos](https://hub.docker.com/r/informaticsmatters/rdkit-python-centos/) - a Centos7 based distribution designed for running RDKit from Python 2.7.
+* [informaticsmatters/rdkit-build-centos](https://hub.docker.com/r/informaticsmatters/rdkit-build-centos/) - Kitchen sink build image equivalent to `informaticsmatters/rdkit-build-debian`.
+* [informaticsmatters/rdkit-python3-centos](https://hub.docker.com/r/informaticsmatters/rdkit-python3-centos/) - a Centos based distribution designed for running RDKit from Python 3. Thes images start from the `Release_2019_09` release.
+* [informaticsmatters/rdkit-java-centos](https://hub.docker.com/r/informaticsmatters/rdkit-java-centos/) - a Centos based distribution designed for running RDKit from Java.
 
 ## Branches
 
