@@ -82,6 +82,9 @@ RDKit version: 2018.03.1.dev1
 Read smiles: c1ccccc1 Number of atoms: 6
 ```
 
+Javadocs are built into `/rdkit/Code/JavaWrappers/gmwrapper/doc`. Since the 2019_09 release a `javadocs.tgz` file is created in the 
+`artifacts/debian/<tag>/java/` directory.
+
 ## Python 3
 
 Starting with the `Release_2019_03` release RDKit only supports Python 3.

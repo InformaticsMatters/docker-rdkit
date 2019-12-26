@@ -86,6 +86,7 @@ RUN nproc=$(getconf _NPROCESSORS_ONLN)\
 RUN make install
 RUN sh Code/PgSQL/rdkit/pgsql_install.sh
 RUN cpack -G DEB
+RUN cd /rdkit/Code/JavaWrappers/gmwrapper && tar cvfz javadoc.tgz doc
 
 WORKDIR $RDBASE
 
