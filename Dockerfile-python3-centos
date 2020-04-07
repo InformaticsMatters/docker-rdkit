@@ -25,6 +25,8 @@ ARG DOCKER_TAG=latest
 COPY artifacts/centos/$DOCKER_TAG/rpms/RDKit-*-Linux-Runtime.rpm artifacts/centos/$DOCKER_TAG/rpms/RDKit-*-Linux-Python.rpm /tmp/
 RUN rpm --nodeps -iv /tmp/*.rpm && rm -f /tmp/*.rpm
 
+ENV RDBASE=/usr/share/RDKit
+
 WORKDIR /
 
 # add the rdkit user
