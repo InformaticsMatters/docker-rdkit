@@ -29,7 +29,7 @@ WORKDIR /
 ENV JAVA_HOME /usr/lib/jvm/java-11-openjdk-amd64
 ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/rdkit/gmwrapper
 ENV CLASSPATH=/rdkit/gmwrapper/org.RDKit.jar
-ENV RDBASE=/usr/share/RDKit/
+ENV RDBASE=/usr/share/RDKit
 
 # add the rdkit user
 RUN useradd -u 1000 -U -G 0 -m rdkit
