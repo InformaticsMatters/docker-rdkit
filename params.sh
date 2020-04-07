@@ -1,7 +1,7 @@
-export DOCKER_TAG=latest
+export DOCKER_TAG=Release_2020_03
 export GIT_REPO=https://github.com/rdkit/rdkit.git
-export GIT_BRANCH=master
+export GIT_BRANCH=$DOCKER_TAG
 unset GIT_TAG
 
 export BASE=informaticsmatters
-echo "DOCKER_TAG=$DOCKER_TAG GIT_BRANCH=$GIT_BRANCH no tag"
+echo "DOCKER_TAG=$DOCKER_TAG GIT_BRANCH=$GIT_BRANCH"
