@@ -1,0 +1,95 @@
+# Dockerfile for building RDKit artifacts.
+# This image contains all aspects of RDKit plus the build system.
+# Its purpose is to create the RDKit artifacts that will be deployed to AWS Lambda.
+
+# The LambCI project provides a number of Docker images that closely mimic the
+# AWS Lambda environment.  More details here: https://github.com/lambci/docker-lambda
+FROM lambci/lambda:build-python3.6 
+
+# AWS Lambda is based on CentOS, which only provides Boost 1.53 and does not work with RDKit.
+# For the time being, exclude installing the boost packages and instead build from source.
+# We can revert this once updated boost packages are available.
+
+RUN yum install -y epel-release
+RUN yum install -y --enablerepo=epel --setopt=tsflags=nodocs --setopt=override_install_langs=en_US.utf8\
+  readline-devel\
+  zlib-devel\
+  bzip2-devel\
+  sqlite-devel\
+  @development\
+  cmake3\
+  #boost\
+  #boost-python\
+  #boost-devel\
+  eigen3\
+  eigen3-devel\
+  swig\
+  git\
+  yum clean all &&\
+  rm -rf /var/cache/yum
+
+# Unlike the 'build-python2.7' image, this LambCI image does not install Python from
+# the Amazon repo and instead builds from source.  The Python base is /var/lang/bin/python3.6,
+# which must be aliased in order for the RDKit build and packaging scripts to locate
+# the interpreter.
+RUN ln -sf /var/lang/bin/python3.6 /usr/bin/python
+RUN ln -sf /var/lang/bin/python3.6 /usr/bin/python3
+RUN ln -s /var/lang/include/python3.6m /var/lang/include/python3.6
+
+# Numpy for Python 3.6 is not available from the Amazon repo.
+RUN pip install numpy
+
+# Here we build boost from source.
+# This will be unnecessary once updated boost packages are available.
+WORKDIR /root/boost
+RUN curl -L -o boost.tgz http://sourceforge.net/projects/boost/files/boost/1.58.0/boost_1_58_0.tar.gz &&\
+  tar xfz boost.tgz &&\
+  rm -f boost.tgz &&\
+  cd boost_1_58_0 &&\
+  ./bootstrap.sh --with-libraries=python,serialization,system,iostreams &&\
+  ./b2 install
+
+# Tar up the built libraries (which have been installed into /usr/local/lib)
+# as we'll need them for the runtime images.
+# They need to go in /usr/lib64
+WORKDIR /usr/local/lib
+RUN  tar cvfz /root/boost-1.58.0.tgz libboost*so.*
+
+WORKDIR /
+
+# Clone the RDKit repo and do the build
+ARG RDKIT_BRANCH=master
+RUN git clone -b $RDKIT_BRANCH --single-branch https://github.com/rdkit/rdkit.git
+
+ENV RDBASE=/rdkit
+ENV JAVA_HOME=/usr/lib/jvm/java
+ENV CLASSPATH=$RDBASE/Code/JavaWrappers/gmwrapper/org.RDKit.jar
+
+RUN mkdir $RDBASE/build
+WORKDIR $RDBASE/build
+
+# Extra options here to let the RDKit build know which Python install to use
+RUN cmake3 -Wno-dev\
+  -DPYTHON_EXECUTABLE=/var/lang/bin/python3.6\
+  -DPYTHON_INCLUDE_DIR=/var/lang/include/python3.6\
+  -DPYTHON_LIBRARY=/var/lang/lib/python3.6/config-3.6m-x86_64-linux-gnu/libpython3.6m.a\
+  -DBOOST_ROOT=/root/boost/boost_1_58_0\
+  -DLIB_SUFFIX=64\
+  -DRDK_INSTALL_INTREE=OFF\
+  -DRDK_BUILD_INCHI_SUPPORT=ON\
+  -DRDK_BUILD_AVALON_SUPPORT=ON\
+  -DRDK_BUILD_PYTHON_WRAPPERS=ON\
+  -DRDK_BUILD_SWIG_WRAPPERS=OFF\
+  -DCMAKE_INSTALL_PREFIX=/usr\
+  ..
+
+RUN nproc=$(getconf _NPROCESSORS_ONLN)\
+  && make -j $(( nproc > 2 ? nproc - 2 : 1 ))\
+#  && make install\
+  && cpack3 -G RPM
+
+ENV CLASSPATH=$RDBASE/Code/JavaWrappers/gmwrapper/org.RDKit.jar
+ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$RDBASE/lib:$RDBASE/Code/JavaWrappers/gmwrapper:/usr/lib/x86_64-linux-gnu
+ENV PYTHONPATH=$PYTHONPATH:$RDBASE
+WORKDIR $RDBASE
+
