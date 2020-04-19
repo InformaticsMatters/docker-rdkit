@@ -37,6 +37,8 @@ RUN dpkg -i /tmp/*.deb && rm -f /tmp/*.deb
 # symlink python3 to python
 RUN cd /usr/bin && ln -s python3 python && ln -s pip3 pip
 
+ENV RDBASE=/usr/share/RDKit
+
 WORKDIR /
 
 # add the rdkit user

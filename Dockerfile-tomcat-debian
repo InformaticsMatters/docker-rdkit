@@ -31,7 +31,7 @@ USER 501
 WORKDIR $CATALINA_HOME
 ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/rdkit/gmwrapper
 ENV CLASSPATH=/rdkit/gmwrapper/org.RDKit.jar
-ENV RDBASE=/usr/lib
+ENV RDBASE=/usr/share/RDKit
 
 RUN echo "CLASSPATH=/rdkit/gmwrapper/org.RDKit.jar\n" > /usr/local/tomcat/bin/setenv.sh
 

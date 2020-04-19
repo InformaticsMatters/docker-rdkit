@@ -27,6 +27,8 @@ RUN rpm --nodeps -iv /tmp/*.rpm && rm -f /tmp/*.rpm
 
 WORKDIR /
 
+ENV RDBASE=/usr/share/RDKit
+
 # add the rdkit user
 RUN useradd -u 1000 -U -G 0 rdkit
 USER 1000
