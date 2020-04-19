@@ -94,18 +94,18 @@ Javadocs are built into `/rdkit/Code/JavaWrappers/gmwrapper/doc`. Since the 2019
 ## RDBASE environment variable
 
 In old versions of the images the RDBASE environment variable was set incorrectly which would impact functions where RDKit
-needs to read it's internal data files. Since the `2020_03` images this should be correctly set, but older images will
+needs to read it's internal data files. Since the `2020_03`, `2019_09` and `2019_09_3` images this should be correctly set, but older images will
 suffer this problem and to fix it you must define the RDBASE environment variable when you run the container and set it
 to a value of `/usr/share/RDKit`. e.g. `docker run -it -e RDBASE=/usr/share/RDKit ...`
 
 ## Python 3
 
 Starting with the `Release_2019_03` release RDKit only supports Python 3.
-We are now building Python 3 versions on the master/latest branch and for the 2019_03 branch.
+We have been building Python 3 versions on the master/latest branch and for the 2019_03 versions onwards.
 
 ## Java
 
-Most images are built with Java 8. Recently (early 2019) the Debian Buster repositories changed so that 
+Most images are built with Java 8. In early 2019 the Debian Buster repositories changed so that 
 Java 11 was present and Java 8 was no longer available (and could not easily be added). Thus Debian
 images from 2019 onwards are built with Java 11. 
 
@@ -148,7 +148,6 @@ Notes:
 ## Hopefully coming soon
 
 * Tests for built images.
-* More Centos based images. Currently these are difficult to build as RDKit needs a more recent version of boost (1.56) than is present in the Centos repositories (1.53) and we have not yet found a clean way round this.
 
 Requests also welcome!
 
