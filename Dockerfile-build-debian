@@ -11,16 +11,7 @@ ARG GIT_BRANCH=master
 ARG GIT_TAG
 ARG POSTGRES_VERSION=11
 
-# This adds the postgres apt repos as postgresql-10 is not available for buster 
-# and postgresql-11 does not seem to work with RDKit yet.
-#
 RUN apt-get update &&\
- apt-get -y install curl ca-certificates gnupg &&\
- curl https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - &&\
- echo "deb http://apt.postgresql.org/pub/repos/apt/ buster-pgdg main" >  /etc/apt/sources.list.d/pgdg.list
-
-RUN apt-get update &&\
-  #apt-get upgrade -y &&\
   apt-get install -y --no-install-recommends \
   build-essential\
   python3-dev\
