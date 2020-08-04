@@ -44,6 +44,9 @@ For each RDKit version (image tag) we build a number of images:
 * `Release_2019_09_2` - build from RDKit Release_2019_09_2 release tag. These images should never change [1]. Images have tag of `Release_2019_09_2`
 * `Release_2020_03` - build from RDKit Release_2020_03 branch and occasionally rebuilt as the code gets updated. Images have tag of `Release_2020_03`.
 * `Release_2020_03_1` - build from RDKit Release_2020_03_1 release tag. These images should never change [1]. Images have tag of `Release_2020_03_1`
+* `Release_2020_03_2` - build from RDKit Release_2020_03_2 release tag. These images should never change [1]. Images have tag of `Release_2020_03_2`
+* `Release_2020_03_3` - build from RDKit Release_2020_03_3 release tag. These images should never change [1]. Images have tag of `Release_2020_03_3`
+* `Release_2020_03_4` - build from RDKit Release_2020_03_4 release tag. These images should never change [1]. Images have tag of `Release_2020_03_4`
 
 
 
