@@ -27,13 +27,13 @@ docker run -it --rm -u $(id -u)\
 # build image for python
 docker build --no-cache -f Dockerfile-python3-centos\
   -t $BASE/rdkit-python3-centos:$DOCKER_TAG\
-  --build-arg TAG=$DOCKER_TAG .
+  --build-arg DOCKER_TAG=$DOCKER_TAG .
 echo "Built image informaticsmatters/rdkit-python3-centos:$DOCKER_TAG"
 
 # build image for java
 docker build --no-cache -f Dockerfile-java-centos\
   -t $BASE/rdkit-java-centos:$DOCKER_TAG\
-  --build-arg TAG=$DOCKER_TAG .
+  --build-arg DOCKER_TAG=$DOCKER_TAG .
 echo "Built image informaticsmatters/rdkit-java-centos:$DOCKER_TAG"
 
 
