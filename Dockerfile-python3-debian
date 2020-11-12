@@ -26,7 +26,8 @@ RUN apt-get update &&\
  libboost-iostreams1.67.0\
  sqlite3\
  wget\
- zip &&\
+ zip\
+ libfreetype6 &&\
  apt-get clean -y
 
 ARG DOCKER_TAG=latest

@@ -16,7 +16,8 @@ RUN sed -i 's/enabled=0/enabled=1/' /etc/yum.repos.d/CentOS-PowerTools.repo &&\
  python3-setuptools\
  python3-six\
  boost\
- boost-python3 &&\
+ boost-python3\
+ freetype-devel &&\
  yum clean -y all &&\
  rm -rf /var/cache/yum
 
