@@ -38,7 +38,8 @@ RUN apt-get update &&\
   postgresql-server-dev-$POSTGRES_VERSION\
   postgresql-plpython3-$POSTGRES_VERSION\
   zip\
-  unzip &&\
+  unzip\
+  libfreetype6-dev &&\
   apt-get clean -y
 
 
