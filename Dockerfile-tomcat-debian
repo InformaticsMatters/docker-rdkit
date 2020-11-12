@@ -17,7 +17,8 @@ RUN apt-get update &&\
  libboost-chrono1.67.0\
  libboost-date-time1.67.0\
  libboost-atomic1.67.0\
- libboost-iostreams1.67.0 &&\
+ libboost-iostreams1.67.0\
+ libfreetype6-dev &&\
  apt-get clean -y
 
 ARG DOCKER_TAG=latest
