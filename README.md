@@ -27,27 +27,27 @@ For each RDKit version (image tag) we build a number of images:
 
 * `master` - build from current RDKit master branch. These images are updated at irregular intervals. Images have tag of `latest`.
 * `Release_2017_09_2` - build from RDKit Release_2017_09_2 branch. These are not working correctly yet and may be dropped.
-* `Release_2018_03` - build from RDKit Release_2018_03 branch and occasionally rebuilt as the code gets updated. Images have tag of `Release_2018_03`.
-* `Release_2018_03_1` - build from RDKit Release_2018_03_1 release tag. These images should never change [1]. Images have tag of `Release_2018_03_1` [2].
+* `Release_2018_03` - build from RDKit Release_2018_03 branch and occasionally rebuilt as the code gets updated. Images have tag of `Release_2018_03`
+* `Release_2018_03_1` - build from RDKit Release_2018_03_1 release tag. These images should never change [1]. Images have tag of `Release_2018_03_1` [2]
 * `Release_2018_03_2` - build from RDKit Release_2018_03_2 release tag. These images should never change [1]. Images have tag of `Release_2018_03_2`.
-* `Release_2018_09` - build from RDKit Release_2018_09 branch and occasionally rebuilt as the code gets updated. Images have tag of `Release_2018_09`.
+* `Release_2018_09` - build from RDKit Release_2018_09 branch and occasionally rebuilt as the code gets updated. Images have tag of `Release_2018_09`
 * `Release_2018_09_1` - build from RDKit Release_2018_09_1 release tag. These images should never change [1]. Images have tag of `Release_2018_09_1`
 * `Release_2018_09_2` - build from RDKit Release_2018_09_2 release tag. These images should never change [1]. Images have tag of `Release_2018_09_2`
 * `Release_2018_09_3` - build from RDKit Release_2018_09_3 release tag. These images should never change [1]. Images have tag of `Release_2018_09_3`
-* `Release_2019_03` - build from RDKit Release_2019_03 branch and occasionally rebuilt as the code gets updated. Images have tag of `Release_2019_03`.
+* `Release_2019_03` - build from RDKit Release_2019_03 branch and occasionally rebuilt as the code gets updated. Images have tag of `Release_2019_03`
 * `Release_2019_03_1` - build from RDKit Release_2019_03_1 release tag. These images should never change [1]. Images have tag of `Release_2019_03_1`
 * `Release_2019_03_2` - build from RDKit Release_2019_03_2 release tag. These images should never change [1]. Images have tag of `Release_2019_03_2`
 * `Release_2019_03_3` - build from RDKit Release_2019_03_3 release tag. These images should never change [1]. Images have tag of `Release_2019_03_3`
 * `Release_2019_03_4` - build from RDKit Release_2019_03_4 release tag. These images should never change [1]. Images have tag of `Release_2019_03_4`
-* `Release_2019_09` - build from RDKit Release_2019_09 branch and occasionally rebuilt as the code gets updated. Images have tag of `Release_2019_09`.
+* `Release_2019_09` - build from RDKit Release_2019_09 branch and occasionally rebuilt as the code gets updated. Images have tag of `Release_2019_09`
 * `Release_2019_09_1` - build from RDKit Release_2019_09_1 release tag. These images should never change [1]. Images have tag of `Release_2019_09_1`
 * `Release_2019_09_2` - build from RDKit Release_2019_09_2 release tag. These images should never change [1]. Images have tag of `Release_2019_09_2`
-* `Release_2020_03` - build from RDKit Release_2020_03 branch and occasionally rebuilt as the code gets updated. Images have tag of `Release_2020_03`.
+* `Release_2020_03` - build from RDKit Release_2020_03 branch and occasionally rebuilt as the code gets updated. Images have tag of `Release_2020_03`
 * `Release_2020_03_1` - build from RDKit Release_2020_03_1 release tag. These images should never change [1]. Images have tag of `Release_2020_03_1`
 * `Release_2020_03_2` - build from RDKit Release_2020_03_2 release tag. These images should never change [1]. Images have tag of `Release_2020_03_2`
 * `Release_2020_03_3` - build from RDKit Release_2020_03_3 release tag. These images should never change [1]. Images have tag of `Release_2020_03_3`
-* `Release_2020_03_4` - build from RDKit Release_2020_03_4 release tag. These images should never change [1]. Images have tag of `Release_2020_03_4`
-
+* `Release_2020_09` - build from RDKit Release_2020_09 branch and occasionally rebuilt as the code gets updated. Images have tag of `Release_2020_09` 
+* `Release_2020_09_1` - build from RDKit Release_2020_09_1 release tag. These images should never change [1]. Images have tag of `Release_2020_09_1`
 
 
 [1] Where we say that the images should never change what we really mean in that the RDKit content should never change. We may rebuild these images occasionally when we find further improvements, and the underlying Centos/Debian packages may be updated, but the RDKit code should be exactly the same.
