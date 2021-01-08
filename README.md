@@ -48,6 +48,8 @@ For each RDKit version (image tag) we build a number of images:
 * `Release_2020_03_3` - build from RDKit Release_2020_03_3 release tag. These images should never change [1]. Images have tag of `Release_2020_03_3`
 * `Release_2020_09` - build from RDKit Release_2020_09 branch and occasionally rebuilt as the code gets updated. Images have tag of `Release_2020_09` 
 * `Release_2020_09_1` - build from RDKit Release_2020_09_1 release tag. These images should never change [1]. Images have tag of `Release_2020_09_1`
+* `Release_2020_09_2` - build from RDKit Release_2020_09_2 release tag. These images should never change [1]. Images have tag of `Release_2020_09_2`
+* `Release_2020_09_3` - build from RDKit Release_2020_09_3 release tag. These images should never change [1]. Images have tag of `Release_2020_09_3`
 
 
 [1] Where we say that the images should never change what we really mean in that the RDKit content should never change. We may rebuild these images occasionally when we find further improvements, and the underlying Centos/Debian packages may be updated, but the RDKit code should be exactly the same.
