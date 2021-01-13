@@ -1,3 +1,5 @@
 **/*~
 **.class
 artifacts/
+.idea
+docker-rdkit.iml
