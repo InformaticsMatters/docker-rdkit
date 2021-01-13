@@ -84,13 +84,20 @@ Run the Java image like this:
 
 The CLASSPATH environment variable is already defined to include the RDKit library. 
 You'll need to add your own classes and/or libraries to the CLASSPATH. 
-To do a simple test with the java image using a simple Java class that can be found in the java_src directory:
+To do a simple test with the java image using simple Java classes that can be found in the java_src directory first compile
+the classes like this:
 ```
-docker run -it --rm -v $PWD/java_src:/example:Z -u root informaticsmatters/rdkit-java-debian:<tag_name> sh -c 'cd /example && ./run.sh'
-RDKit version: 2018.03.1.dev1
+$ docker run -it --rm -v $PWD/java_src:/example:Z informaticsmatters/rdkit-build-debian:<tag_name> sh -c 'cd /example && ./compile.sh'
+```
+Then run like this:
+```
+$ docker run -it --rm -v $PWD/java_src:/example:Z informaticsmatters/rdkit-java-debian:<tag_name> sh -c 'cd /example && ./run.sh'
+RDKit version: 2020.09.3
 Read smiles: c1ccccc1 Number of atoms: 6
-RDKit version: 2020.03.1
-Mol: org.RDKit.RWMol@77459877
+RDKit version: 2020.09.3
+Mol: org.RDKit.RWMol@5b2133b1
+RDKit version: 2020.09.3
+MorganFP: 4294967295
 ```
 
 Javadocs are built into `/rdkit/Code/JavaWrappers/gmwrapper/doc`. Since the 2019_09 release a `javadocs.tgz` file is created in the 
