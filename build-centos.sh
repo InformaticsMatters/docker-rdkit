@@ -1,6 +1,6 @@
 #!/bin/bash
-# 
-# centos based build 
+#
+# centos based build
 #
 # Currently Java and Cartridge images are not built to limit the complexity. Use the
 # debain based images if you need these.
@@ -28,12 +28,12 @@ docker run -it --rm -u $(id -u)\
 docker build --no-cache -f Dockerfile-python3-centos\
   -t $BASE/rdkit-python3-centos:$DOCKER_TAG\
   --build-arg TAG=$DOCKER_TAG .
-echo "Built image informaticsmatters/rdkit-python3-centos:$DOCKER_TAG"
+echo "Built image ${BASE}/rdkit-python3-centos:$DOCKER_TAG"
 
 # build image for java
 docker build --no-cache -f Dockerfile-java-centos\
   -t $BASE/rdkit-java-centos:$DOCKER_TAG\
   --build-arg TAG=$DOCKER_TAG .
-echo "Built image informaticsmatters/rdkit-java-centos:$DOCKER_TAG"
+echo "Built image ${BASE}/rdkit-java-centos:$DOCKER_TAG"
 
 

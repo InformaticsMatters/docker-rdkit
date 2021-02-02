@@ -10,6 +10,7 @@ ARG GIT_REPO
 ARG GIT_BRANCH=master
 ARG GIT_TAG
 ARG POSTGRES_VERSION=11
+ARG TARGETARCH
 
 RUN apt-get update &&\
   apt-get install -y --no-install-recommends \
@@ -51,9 +52,9 @@ COPY patch_pgsql_rpm.patch /rdkit
 RUN cd /rdkit && patch -p1 < patch_pgsql_rpm.patch
 
 ENV RDBASE=/rdkit
-ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$RDBASE/lib:$RDBASE/Code/JavaWrappers/gmwrapper:/usr/lib/x86_64-linux-gnu
+ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$RDBASE/lib:$RDBASE/Code/JavaWrappers/gmwrapper:/usr/lib/x86_64-linux-gnu:/usr/lib/aarch64-linux-gnu/
 ENV PYTHONPATH=$PYTHONPATH:$RDBASE
-ENV JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
+ENV JAVA_HOME=/usr/lib/jvm/java-11-openjdk-${TARGETARCH}
 ENV CLASSPATH=$RDBASE/Code/JavaWrappers/gmwrapper/org.RDKit.jar
 
 RUN mkdir $RDBASE/build
