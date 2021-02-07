@@ -1,8 +1,9 @@
 #!/bin/bash
+#
 # Buildah build script for RDKit image with Python3.
 # Also inlcudes numpy and pandas.
 #
-# The RDKIT_BRANCH environment variable must be defined. This defines the RDKit branch to pull
+# The GIT_BRANCH environment variable must be defined. This defines the RDKit branch to pull
 # and is used to define the tag for the image that is built.
 #
 # The result is a buildah image that can be pushed to the local docker registry like this:
@@ -10,14 +11,15 @@
 
 set -e
 
+source ../params.sh
 
-if [ ! -v RDKIT_BRANCH ]; then
-  echo "RDKIT_BRANCH not defined"
+if [ ! -v GIT_BRANCH ]; then
+  echo "GIT_BRANCH not defined"
   exit 1
-elif [ "$RDKIT_BRANCH" = "master" ]; then
+elif [ "$GIT_BRANCH" = "master" ]; then
   export IMAGE_TAG="latest"
 else
-  export IMAGE_TAG=$RDKIT_BRANCH
+  export IMAGE_TAG=$GIT_BRANCH
 fi
 echo "Using image tag $IMAGE_TAG"
 
@@ -29,34 +31,36 @@ export scratchmnt=$(buildah mount $newcontainer)
 echo "Creating python3 container $newcontainer using $scratchmnt"
 
 # install the required packages
-dnf -y install\
+yum -y install\
+  --setopt override_install_langs=en_US.utf8\
+  --setopt install_weak_deps=false\
+  --setopt tsflags=nodocs\
+  --installroot $scratchmnt --releasever 8\
   bash\
   coreutils\
   cairo\
   python3\
   python3-devel\
   python3-numpy\
-  python3-pandas\
   boost\
   boost-python3\
   curl\
   zip\
   unzip\
-  procps-ng\
-  --installroot $scratchmnt --releasever 29\
-  --setopt override_install_langs=en_US.utf8\
-  --setopt install_weak_deps=false\
-  --setopt tsflags=nodocs
-dnf -y clean all --installroot $scratchmnt --releasever 29
+  procps-ng
+  
+yum -y clean all --installroot $scratchmnt --releasever 8
 rm -rf $scratchmnt/var/cache/dnf
 
 # create a symlink that allows to run python3 as python
-cd $scratchmnt/usr/bin && ln -s python3 python
+#cd $scratchmnt/usr/bin && ln -s python3 python
 
+# install RDKit
 cd /root/rdkit/build
-
-# install RDKit into the python container
 make DESTDIR=$scratchmnt install
+
+# create a symlink that allows to run python3 as python
+cd $scratchmnt/usr/bin && ln -s python3 python
 
 # set some config info
 buildah config\

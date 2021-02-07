@@ -3,32 +3,39 @@
 # docker build -f Dockerfile-buildah .
 # docker tag b8bc8c47ce3f informaticsmatters/rdkit-buildah:latest
 
-FROM fedora:29
+FROM centos:8
 LABEL maintainer="Tim Dudgeon<tdudgeon@informaticsmatters.com>"
 
 
-RUN dnf -y update && dnf -y upgrade && dnf -y install\
- gcc-c++\
- python3-devel\
- boost-devel\
- boost-python3-devel\
- eigen3-devel\
- cmake\
- tk-devel\
- readline-devel\
- zlib-devel\
- bzip2-devel\
- sqlite-devel\
- @development-tools\
- swig\
- git\
- zip\
- wget\
- java-1.8.0-openjdk-devel\
- cairo-devel\
- buildah &&\
- dnf clean all &&\
- rm -rf /var/cache/dnf
+RUN yum -y update &&\
+  sed -i 's/enabled=0/enabled=1/' /etc/yum.repos.d/CentOS-Linux-PowerTools.repo &&\
+  yum install -y\
+  --setopt=tsflags=nodocs\
+  --setopt=override_install_langs=en_US.utf8\
+  tk-devel\
+  readline-devel\
+  zlib-devel\
+  bzip2-devel\
+  sqlite-devel\
+  @development\
+  cmake3\
+  python3-devel\
+  python3-numpy\
+  boost-devel\
+  boost-python3-devel\
+  eigen3-devel\
+  java-11-openjdk-devel\
+  swig\
+  git\
+  wget\
+  zip\
+  unzip\
+  freetype-devel\
+  cairo-devel\
+  buildah &&\
+  yum clean all &&\
+  rm -rf /var/cache/yum
 
-ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+
+ENV JAVA_HOME=/usr/lib/jvm/java-11-openjdk
 
