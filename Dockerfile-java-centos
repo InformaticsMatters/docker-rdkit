@@ -8,7 +8,6 @@ RUN yum update -y &&\
   sed -i 's/enabled=0/enabled=1/' /etc/yum.repos.d/CentOS-Linux-PowerTools.repo &&\
   yum install -y --setopt=tsflags=nodocs --setopt=override_install_langs=en_US.utf8\
   java-11-openjdk-headless\
-  boost\
   boost-system\
   boost-thread\
   boost-serialization\
@@ -16,7 +15,9 @@ RUN yum update -y &&\
   boost-chrono\
   boost-date-time\
   boost-atomic\
-  boost-iostreams &&\
+  boost-iostreams\
+  procps-ng\
+  freetype &&\
   yum clean all &&\
   rm -rf /var/cache/yum
 
@@ -28,7 +29,7 @@ RUN rpm --nodeps -iv /tmp/*.rpm && rm -f /tmp/*.rpm
 
 WORKDIR / 
 
-ENV JAVA_HOME /usr/lib/jvm/java-11-openjdk-amd64
+ENV JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
 ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/rdkit/gmwrapper
 ENV CLASSPATH=/rdkit/gmwrapper/org.RDKit.jar
 ENV RDBASE=/usr/share/RDKit
