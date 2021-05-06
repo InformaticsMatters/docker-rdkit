@@ -8,36 +8,30 @@ LABEL maintainer="Tim Dudgeon<tdudgeon@informaticsmatters.com>"
 
 # centos8 now comes with a version of boost that is compatible with RDKit (unlike centos7).
 
-RUN sed -i 's/enabled=0/enabled=1/' /etc/yum.repos.d/CentOS-PowerTools.repo &&\
-  yum -y install epel-release &&\
-  yum update -y &&\
-  yum install -y --setopt=tsflags=nodocs --setopt=override_install_langs=en_US.utf8\
-  tk-devel\
-  readline-devel\
-  zlib-devel\
-  bzip2-devel\
-  sqlite-devel\
-  @development\
-  cmake3\
-  python3-devel\
-  python3-numpy\
-  boost\
-  boost-devel\
-  boost-python3\
-  boost-python3-devel\
-  eigen3-devel\
-  swig\
-  git\
-  wget\
-  java-11-openjdk-devel\
-  #postgresql-server\
-  #postgresql-server-devel\
-  #postgresql-plpython3\ 
-  zip\
-  unzip\
-  freetype-devel &&\
-  yum clean all &&\
-  rm -rf /var/cache/yum
+RUN yum update -y &&\
+ sed -i 's/enabled=0/enabled=1/' /etc/yum.repos.d/CentOS-Linux-PowerTools.repo &&\
+ yum install -y --setopt=tsflags=nodocs --setopt=override_install_langs=en_US.utf8\
+ tk-devel\
+ readline-devel\
+ zlib-devel\
+ bzip2-devel\
+ sqlite-devel\
+ @development\
+ cmake3\
+ python3-devel\
+ python3-numpy\
+ boost-devel\
+ boost-python3-devel\
+ eigen3-devel\
+ swig\
+ git\
+ wget\
+ java-11-openjdk-devel\
+ zip\
+ unzip\
+ freetype-devel &&\
+ yum clean all &&\
+ rm -rf /var/cache/yum
 
 
 WORKDIR /
