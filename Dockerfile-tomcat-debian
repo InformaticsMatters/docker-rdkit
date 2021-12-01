@@ -6,7 +6,7 @@ LABEL maintainer="Tim Dudgeon<tdudgeon@informaticsmatters.com>"
 
 USER root
 
-RUN apt-get update &&\
+RUN apt-get --allow-releaseinfo-change update &&\
  apt-get upgrade -y &&\ 
  apt-get install -y --no-install-recommends\
  unzip\
