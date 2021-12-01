@@ -18,7 +18,7 @@ RUN apt-get update &&\
  curl https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - &&\
  echo "deb http://apt.postgresql.org/pub/repos/apt/ buster-pgdg main" >  /etc/apt/sources.list.d/pgdg.list
 
-RUN apt-get update &&\
+RUN apt-get --allow-releaseinfo-change update &&\
  apt-get upgrade -y &&\ 
  apt-get install -y --no-install-recommends\
  python3\

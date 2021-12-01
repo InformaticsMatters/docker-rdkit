@@ -5,7 +5,7 @@ FROM debian:buster
 LABEL maintainer="Tim Dudgeon<tdudgeon@informaticsmatters.com>"
 
 
-RUN apt-get update &&\
+RUN apt-get --allow-releaseinfo-change update &&\
  apt-get upgrade -y &&\
  apt-get install -y --no-install-recommends\
  openjdk-11-jre-headless\

@@ -11,7 +11,7 @@ ARG GIT_BRANCH=master
 ARG GIT_TAG
 ARG POSTGRES_VERSION=11
 
-RUN apt-get update &&\
+RUN apt-get --allow-releaseinfo-change update &&\
   #apt-get upgrade -y &&\
   apt-get install -y --no-install-recommends \
   build-essential\
