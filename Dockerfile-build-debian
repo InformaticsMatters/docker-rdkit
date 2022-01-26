@@ -3,13 +3,15 @@
 # It's purpose is to create the RDKit artifacts that will be deployed to lighter weight images.
 
 # Latest RDKit now needs cmake 3.1 which is not preset on jessie so we must use buster
-FROM debian:buster
+FROM debian:bullseye
 LABEL maintainer="Tim Dudgeon<tdudgeon@informaticsmatters.com>"
 
 ARG GIT_REPO
 ARG GIT_BRANCH=master
 ARG GIT_TAG
-ARG POSTGRES_VERSION=11
+ARG POSTGRES_VERSION=13
+
+RUN echo "deb http://deb.debian.org/debian buster main" >> /etc/apt/sources.list
 
 RUN apt-get update &&\
   apt-get install -y --no-install-recommends \
@@ -21,14 +23,14 @@ RUN apt-get update &&\
   sqlite3\
   libsqlite3-dev\
   libboost-dev\
-  libboost-system1.67-dev\
-  libboost-thread1.67-dev\
-  libboost-serialization1.67-dev\
-  libboost-python1.67-dev\
-  libboost-regex1.67-dev\
-  libboost-iostreams1.67-dev\
+  libboost-system1.74-dev\
+  libboost-thread1.74-dev\
+  libboost-serialization1.74-dev\
+  libboost-python1.74-dev\
+  libboost-regex1.74-dev\
+  libboost-iostreams1.74-dev\
   zlib1g-dev\
-  swig\
+  swig3.0\
   libeigen3-dev\
   git\
   wget\
@@ -45,10 +47,6 @@ RUN apt-get update &&\
 RUN if [ $GIT_TAG ]; then echo "Checking out tag $GIT_TAG from repo $GIT_REPO branch $GIT_BRANCH"; else echo "Checking out repo $GIT_REPO branch $GIT_BRANCH"; fi
 RUN git clone -b $GIT_BRANCH --single-branch $GIT_REPO &&\
   if [ $GIT_TAG ]; then cd rdkit && git fetch --tags && git checkout $GIT_TAG; fi
-
-# hack to build cartridge packages. can be removed once this code hits the repo
-COPY patch_pgsql_rpm.patch /rdkit
-RUN cd /rdkit && patch -p1 < patch_pgsql_rpm.patch
 
 ENV RDBASE=/rdkit
 ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$RDBASE/lib:$RDBASE/Code/JavaWrappers/gmwrapper:/usr/lib/x86_64-linux-gnu
