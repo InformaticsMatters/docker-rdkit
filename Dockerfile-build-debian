@@ -2,17 +2,19 @@
 # This is a heavyweight image containing all aspects of RDKit plus the build system.
 # It's purpose is to create the RDKit artifacts that will be deployed to lighter weight images.
 
-# Latest RDKit now needs cmake 3.1 which is not preset on jessie so we must use buster
-FROM debian:buster
+FROM debian:bullseye
 LABEL maintainer="Tim Dudgeon<tdudgeon@informaticsmatters.com>"
 
 ARG GIT_REPO
 ARG GIT_BRANCH=master
 ARG GIT_TAG
-ARG POSTGRES_VERSION=11
+ARG POSTGRES_VERSION=13
+ARG BOOST_VERSION=1.74
 
-RUN apt-get --allow-releaseinfo-change update &&\
-  #apt-get upgrade -y &&\
+RUN echo "deb http://deb.debian.org/debian buster main" >> /etc/apt/sources.list
+
+RUN apt-get update &&\
+  apt-get upgrade -y &&\
   apt-get install -y --no-install-recommends \
   build-essential\
   python3-dev\
@@ -22,14 +24,14 @@ RUN apt-get --allow-releaseinfo-change update &&\
   sqlite3\
   libsqlite3-dev\
   libboost-dev\
-  libboost-system1.67-dev\
-  libboost-thread1.67-dev\
-  libboost-serialization1.67-dev\
-  libboost-python1.67-dev\
-  libboost-regex1.67-dev\
-  libboost-iostreams1.67-dev\
+  libboost-system${BOOST_VERSION}-dev\
+  libboost-thread${BOOST_VERSION}-dev\
+  libboost-serialization${BOOST_VERSION}-dev\
+  libboost-python${BOOST_VERSION}-dev\
+  libboost-regex${BOOST_VERSION}-dev\
+  libboost-iostreams${BOOST_VERSION}-dev\
   zlib1g-dev\
-  swig\
+  swig3.0\
   libeigen3-dev\
   git\
   wget\
