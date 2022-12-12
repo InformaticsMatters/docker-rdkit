@@ -4,38 +4,32 @@
 # build the deb packages so we need to install the packages using apt to have tight control over this.
 #
 
-FROM debian:buster
+FROM debian:bullseye
 LABEL maintainer="Tim Dudgeon<tdudgeon@informaticsmatters.com>"
 
-ENV PG_MAJOR=11
+ENV PG_MAJOR=13
+ENV BOOST_VER=1.74.0
 ARG DOCKER_TAG=latest
-
-# This adds the postgres apt repos as postgresql-10 is not available for buster 
-# and postgresql-11 does not seem to work with RDKit yet.
-#
-RUN apt-get update &&\
- apt-get -y install curl ca-certificates gnupg &&\
- curl https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - &&\
- echo "deb http://apt.postgresql.org/pub/repos/apt/ buster-pgdg main" >  /etc/apt/sources.list.d/pgdg.list
 
 RUN apt-get update &&\
  apt-get upgrade -y &&\ 
  apt-get install -y --no-install-recommends\
  python3\
  python3-numpy\
- libboost-system1.67.0\
- libboost-thread1.67.0\
- libboost-serialization1.67.0\
- libboost-python1.67.0\
- libboost-regex1.67.0\
- libboost-chrono1.67.0\
- libboost-date-time1.67.0\
- libboost-atomic1.67.0\
- libboost-iostreams1.67.0\
+ libboost-system$BOOST_VER\
+ libboost-thread$BOOST_VER\
+ libboost-serialization$BOOST_VER\
+ libboost-python$BOOST_VER\
+ libboost-regex$BOOST_VER\
+ libboost-chrono$BOOST_VER\
+ libboost-date-time$BOOST_VER\
+ libboost-atomic$BOOST_VER\
+ libboost-iostreams$BOOST_VER\
  libfreetype6\ 
  postgresql-$PG_MAJOR\
  postgresql-client-$PG_MAJOR\
  postgresql-plpython3-$PG_MAJOR\
+ pgtop\
  gosu\
  wget\
  zip &&\
