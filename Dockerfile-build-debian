@@ -11,6 +11,7 @@ ARG GIT_BRANCH=master
 ARG GIT_TAG
 ARG POSTGRES_VERSION=13
 ARG TARGETARCH
+ARG BOOST_VER=1.74-dev
 
 RUN apt-get update &&\
   apt-get install -y --no-install-recommends \
@@ -22,12 +23,12 @@ RUN apt-get update &&\
   sqlite3\
   libsqlite3-dev\
   libboost-dev\
-  libboost-system1.74-dev\
-  libboost-thread1.74-dev\
-  libboost-serialization1.74-dev\
-  libboost-python1.74-dev\
-  libboost-regex1.74-dev\
-  libboost-iostreams1.74-dev\
+  libboost-system$BOOST_VER\
+  libboost-thread$BOOST_VER\
+  libboost-serialization$BOOST_VER\
+  libboost-python$BOOST_VER\
+  libboost-regex$BOOST_VER\
+  libboost-iostreams$BOOST_VER\
   zlib1g-dev\
   swig3.0\
   libeigen3-dev\
