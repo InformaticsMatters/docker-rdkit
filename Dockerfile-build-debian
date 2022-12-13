@@ -2,7 +2,6 @@
 # This is a heavyweight image containing all aspects of RDKit plus the build system.
 # It's purpose is to create the RDKit artifacts that will be deployed to lighter weight images.
 
-# Latest RDKit now needs cmake 3.1 which is not preset on jessie so we must use buster
 FROM debian:bullseye
 LABEL maintainer="Tim Dudgeon<tdudgeon@informaticsmatters.com>"
 
@@ -30,7 +29,7 @@ RUN apt-get update &&\
   libboost-regex$BOOST_VER\
   libboost-iostreams$BOOST_VER\
   zlib1g-dev\
-  swig3.0\
+  swig\
   libeigen3-dev\
   git\
   wget\
