@@ -1,8 +1,10 @@
 # Dockerfile for Python3 based RDKit implementation
-# Based on Debian. Does not include Python2.
+# Based on Debian.
 
-FROM debian:buster
+FROM debian:bullseye
 LABEL maintainer="Tim Dudgeon<tdudgeon@informaticsmatters.com>"
+
+ARG BOOST_VER=1.74.0
 
 RUN apt-get update &&\
  apt-get upgrade -y &&\ 
@@ -14,16 +16,17 @@ RUN apt-get update &&\
  python3-setuptools\
  python3-wheel\
  python3-six\
+ python-is-python3\
  gcc\
- libboost-system1.67.0\
- libboost-thread1.67.0\
- libboost-serialization1.67.0\
- libboost-python1.67.0\
- libboost-regex1.67.0\
- libboost-chrono1.67.0\
- libboost-date-time1.67.0\
- libboost-atomic1.67.0\
- libboost-iostreams1.67.0\
+ libboost-system$BOOST_VER\
+ libboost-thread$BOOST_VER\
+ libboost-serialization$BOOST_VER\
+ libboost-python$BOOST_VER\
+ libboost-regex$BOOST_VER\
+ libboost-chrono$BOOST_VER\
+ libboost-date-time$BOOST_VER\
+ libboost-atomic$BOOST_VER\
+ libboost-iostreams$BOOST_VER\
  sqlite3\
  wget\
  zip\
@@ -34,9 +37,6 @@ ARG DOCKER_TAG=latest
 
 COPY artifacts/debian/$DOCKER_TAG/debs/RDKit-*-Linux-Runtime.deb artifacts/debian/$DOCKER_TAG/debs/RDKit-*-Linux-Python.deb /tmp/
 RUN dpkg -i /tmp/*.deb && rm -f /tmp/*.deb
-
-# symlink python3 to python
-RUN cd /usr/bin && ln -s python3 python && ln -s pip3 pip
 
 ENV RDBASE=/usr/share/RDKit
 

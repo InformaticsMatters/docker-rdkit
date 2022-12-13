@@ -16,6 +16,7 @@ RUN apt-get update &&\
  apt-get install -y --no-install-recommends\
  python3\
  python3-numpy\
+ python-is-python3\
  libboost-system$BOOST_VER\
  libboost-thread$BOOST_VER\
  libboost-serialization$BOOST_VER\
@@ -41,9 +42,6 @@ COPY\
   artifacts/debian/$DOCKER_TAG/debs/RDKit-*-Linux-PgSQL.deb\
   /tmp/
 RUN dpkg -i /tmp/*.deb && rm -f /tmp/*.deb
-
-# symlink python3 to python
-RUN cd /usr/bin && ln -s python3 python
 
 WORKDIR /
 

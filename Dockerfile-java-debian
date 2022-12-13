@@ -4,19 +4,20 @@
 FROM debian:bullseye
 LABEL maintainer="Tim Dudgeon<tdudgeon@informaticsmatters.com>"
 
+ARG BOOST_VER=1.74.0
 
 RUN apt-get update &&\
  apt-get upgrade -y &&\
  apt-get install -y --no-install-recommends\
  openjdk-11-jre-headless\
- libboost-system1.74.0\
- libboost-thread1.74.0\
- libboost-serialization1.74.0\
- libboost-regex1.74.0\
- libboost-chrono1.74.0\
- libboost-date-time1.74.0\
- libboost-atomic1.74.0\
- libboost-iostreams1.74.0\
+ libboost-system$BOOST_VER\
+ libboost-thread$BOOST_VER\
+ libboost-serialization$BOOST_VER\
+ libboost-regex$BOOST_VER\
+ libboost-chrono$BOOST_VER\
+ libboost-date-time$BOOST_VER\
+ libboost-atomic$BOOST_VER\
+ libboost-iostreams$BOOST_VER\
  libfreetype6 &&\
  apt-get clean -y
 
