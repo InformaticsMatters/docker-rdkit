@@ -9,7 +9,7 @@ ARG GIT_REPO
 ARG GIT_BRANCH=master
 ARG GIT_TAG
 ARG POSTGRES_VERSION=13
-ARG BOOST_VERSION=1.74
+ARG BOOST_VERSION=1.74-dev
 
 RUN echo "deb http://deb.debian.org/debian buster main" >> /etc/apt/sources.list
 
@@ -24,12 +24,12 @@ RUN apt-get update &&\
   sqlite3\
   libsqlite3-dev\
   libboost-dev\
-  libboost-system${BOOST_VERSION}-dev\
-  libboost-thread${BOOST_VERSION}-dev\
-  libboost-serialization${BOOST_VERSION}-dev\
-  libboost-python${BOOST_VERSION}-dev\
-  libboost-regex${BOOST_VERSION}-dev\
-  libboost-iostreams${BOOST_VERSION}-dev\
+  libboost-system${BOOST_VERSION}\
+  libboost-thread${BOOST_VERSION}\
+  libboost-serialization${BOOST_VERSION}\
+  libboost-python${BOOST_VERSION}\
+  libboost-regex${BOOST_VERSION}\
+  libboost-iostreams${BOOST_VERSION}\
   zlib1g-dev\
   swig3.0\
   libeigen3-dev\
