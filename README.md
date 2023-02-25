@@ -60,6 +60,7 @@ For each RDKit version (image tag) we build a number of images:
 * `Release_2021_03_2` - build from RDKit Release_2021_03_2 release tag. These images should never change [1]. Images have tag of `Release_2021_03_2`
 * `Release_2021_09` - build from RDKit Release_2021_09 branch and occasionally rebuilt as the code gets updated. Images have tag of `Release_2021_09`
 * `Release_2022_03` - build from RDKit Release_2022_03 branch and occasionally rebuilt as the code gets updated. Images have tag of `Release_2022_03`
+* `Release_2022_03_5` - build from RDKit Release_2021_03_5 release tag. These images should never change [1]. Images have tag of `Release_2022_03_5`
 * `Release_2022_09` - build from RDKit Release_2022_09 branch and occasionally rebuilt as the code gets updated. Images have tag of `Release_2022_09`
 * `Release_2022_09_4` - build from RDKit Release_2021_09_4 release tag. These images should never change [1]. Images have tag of `Release_2022_09_4`
 * `Release_2022_09_5` - build from RDKit Release_2021_09_5 release tag. These images should never change [1]. Images have tag of `Release_2022_09_5`
