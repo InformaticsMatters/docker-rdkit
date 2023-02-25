@@ -13,7 +13,7 @@ See the [Smaller containers](https://www.informaticsmatters.com/category/contain
 
 For each RDKit version (image tag) we build a number of images:
 
-* [informaticsmatters/rdkit-build-debian](https://hub.docker.com/r/informaticsmatters/rdkit-build-debian/) - this does a full build of RDKit from source. The result is a kitchen sink image (almost 2GB in size) that contains the entire build infrastructure and eveything that is built. The main purpose of this image is to build the artifacts needed for assembling the other lightweight images. Whist this image might be of some use for personal hacking it is NOT suitable for a public facing system as it is so large and has such a big attack surface. Earlier versions were named `informaticsmatters/rdkit-build`.
+* [informaticsmatters/rdkit-build-debian](https://hub.docker.com/r/informaticsmatters/rdkit-build-debian/) - this does a full build of RDKit from source. The result is a kitchen sink image (almost 2GB in size) that contains the entire build infrastructure and eveything that is built. The main purpose of this image is to build the artifacts needed for assembling the other lightweight images. Whist this image might be of some use for personal hacking it is NOT suitable for a public facing system as it is so large and has such a big attack surface. Earlier versions were named `informaticsmatters/rdkit-build`. NOTE: we have stopped pushing this image as it is large and not very useful.
 * [informaticsmatters/rdkit-python-debian](https://hub.docker.com/r/informaticsmatters/rdkit-python-debian/) - a Debian based distribution designed for running RDKit from Python 2. The image size is approx 400MB. The last Python 2 images are for the `Release_2018_09` release.
 * [informaticsmatters/rdkit-python3-debian](https://hub.docker.com/r/informaticsmatters/rdkit-python3-debian/) - a Debian based distribution designed for running RDKit from Python 3. Thes images start from the `Release_2019_03` release.
 * [informaticsmatters/rdkit-java-debian](https://hub.docker.com/r/informaticsmatters/rdkit-java-debian/) - a Debian based distribution designed for running RDKit from Java.
@@ -55,9 +55,14 @@ For each RDKit version (image tag) we build a number of images:
 * `Release_2020_09_3` - build from RDKit Release_2020_09_3 release tag. These images should never change [1]. Images have tag of `Release_2020_09_3`
 * `Release_2020_09_4` - build from RDKit Release_2020_09_4 release tag. These images should never change [1]. Images have tag of `Release_2020_09_4`
 * `Release_2020_09_5` - build from RDKit Release_2020_09_5 release tag. These images should never change [1]. Images have tag of `Release_2020_09_5`
-* `Release_2021_03` - build from RDKit Release_2020_09 branch and occasionally rebuilt as the code gets updated. Images have tag of `Release_2021_03`
+* `Release_2021_03` - build from RDKit Release_2021_03 branch and occasionally rebuilt as the code gets updated. Images have tag of `Release_2021_03`
 * `Release_2021_03_1` - build from RDKit Release_2021_03_1 release tag. These images should never change [1]. Images have tag of `Release_2021_03_1`
 * `Release_2021_03_2` - build from RDKit Release_2021_03_2 release tag. These images should never change [1]. Images have tag of `Release_2021_03_2`
+* `Release_2021_09` - build from RDKit Release_2021_09 branch and occasionally rebuilt as the code gets updated. Images have tag of `Release_2021_09`
+* `Release_2022_03` - build from RDKit Release_2022_03 branch and occasionally rebuilt as the code gets updated. Images have tag of `Release_2022_03`
+* `Release_2022_09` - build from RDKit Release_2022_09 branch and occasionally rebuilt as the code gets updated. Images have tag of `Release_2022_09`
+* `Release_2022_09_4` - build from RDKit Release_2021_09_4 release tag. These images should never change [1]. Images have tag of `Release_2022_09_4`
+* `Release_2022_09_5` - build from RDKit Release_2021_09_5 release tag. These images should never change [1]. Images have tag of `Release_2022_09_5`
 
 
 [1] Where we say that the images should never change what we really mean in that the RDKit content should never change. We may rebuild these images occasionally when we find further improvements, and the underlying Centos/Debian packages may be updated, but the RDKit code should be exactly the same.
