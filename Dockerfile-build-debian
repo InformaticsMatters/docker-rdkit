@@ -11,7 +11,7 @@ ARG GIT_TAG
 ARG POSTGRES_VERSION=13
 ARG BOOST_VERSION=1.74-dev
 
-RUN echo "deb http://deb.debian.org/debian buster main" >> /etc/apt/sources.list
+#RUN echo "deb http://deb.debian.org/debian buster main" >> /etc/apt/sources.list
 
 RUN apt-get update &&\
   apt-get upgrade -y &&\
@@ -31,7 +31,7 @@ RUN apt-get update &&\
   libboost-regex${BOOST_VERSION}\
   libboost-iostreams${BOOST_VERSION}\
   zlib1g-dev\
-  swig3.0\
+  swig\
   libeigen3-dev\
   git\
   wget\

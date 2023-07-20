@@ -11,6 +11,8 @@ ENV PG_MAJOR=13
 ARG DOCKER_TAG=latest
 ARG BOOST_VERSION=1.74
 
+RUN echo "deb http://deb.debian.org/debian buster main" >> /etc/apt/sources.list
+
 RUN apt-get update &&\
  apt-get upgrade -y &&\
  apt-get install -y --no-install-recommends\
