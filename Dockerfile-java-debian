@@ -1,16 +1,16 @@
 # Dockerfile for Java based RDKit implementation
 # Based on Debian.
 
-FROM debian:bullseye
+FROM debian:bookworm
 LABEL maintainer="Tim Dudgeon<tdudgeon@informaticsmatters.com>"
 
 ARG TARGETARCH
-ARG BOOST_VER=1.74.0
+ARG BOOST_VER=1.81.0
 
 RUN apt-get update &&\
  apt-get upgrade -y &&\
  apt-get install -y --no-install-recommends\
- openjdk-11-jre-headless\
+ openjdk-17-jre-headless\
  libboost-system$BOOST_VER\
  libboost-thread$BOOST_VER\
  libboost-serialization$BOOST_VER\
@@ -29,7 +29,7 @@ COPY artifacts/debian/$DOCKER_TAG/debs/RDKit-*-Linux-Runtime.deb /tmp/
 RUN dpkg -i /tmp/*.deb && rm -f /tmp/*.deb
 WORKDIR /
 
-ENV JAVA_HOME /usr/lib/jvm/java-11-openjdk-${TARGETARCH}
+ENV JAVA_HOME /usr/lib/jvm/java-17-openjdk-${TARGETARCH}
 ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/rdkit/gmwrapper
 ENV CLASSPATH=/rdkit/gmwrapper/org.RDKit.jar
 ENV RDBASE=/usr/share/RDKit

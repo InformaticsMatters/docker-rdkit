@@ -2,15 +2,15 @@
 # This is a heavyweight image containing all aspects of RDKit plus the build system.
 # It's purpose is to create the RDKit artifacts that will be deployed to lighter weight images.
 
-FROM debian:bullseye
+FROM debian:bookworm
 LABEL maintainer="Tim Dudgeon<tdudgeon@informaticsmatters.com>"
 
 ARG GIT_REPO
 ARG GIT_BRANCH=master
 ARG GIT_TAG
-ARG POSTGRES_VERSION=13
 ARG TARGETARCH
-ARG BOOST_VER=1.74-dev
+ARG POSTGRES_VERSION=15
+ARG BOOST_VER=1.81-dev
 
 RUN apt-get update &&\
   apt-get install -y --no-install-recommends \
@@ -21,7 +21,7 @@ RUN apt-get update &&\
   cmake\
   sqlite3\
   libsqlite3-dev\
-  libboost-dev\
+  libboost$BOOST_VER\
   libboost-system$BOOST_VER\
   libboost-thread$BOOST_VER\
   libboost-serialization$BOOST_VER\
@@ -33,7 +33,7 @@ RUN apt-get update &&\
   libeigen3-dev\
   git\
   wget\
-  openjdk-11-jdk\
+  openjdk-17-jdk\
   postgresql-$POSTGRES_VERSION\
   postgresql-server-dev-$POSTGRES_VERSION\
   postgresql-plpython3-$POSTGRES_VERSION\
@@ -50,7 +50,7 @@ RUN git clone -b $GIT_BRANCH --single-branch $GIT_REPO &&\
 ENV RDBASE=/rdkit
 ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$RDBASE/lib:$RDBASE/Code/JavaWrappers/gmwrapper:/usr/lib/x86_64-linux-gnu:/usr/lib/aarch64-linux-gnu/
 ENV PYTHONPATH=$PYTHONPATH:$RDBASE
-ENV JAVA_HOME=/usr/lib/jvm/java-11-openjdk-${TARGETARCH}
+ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-${TARGETARCH}
 ENV CLASSPATH=$RDBASE/Code/JavaWrappers/gmwrapper/org.RDKit.jar
 
 RUN mkdir $RDBASE/build

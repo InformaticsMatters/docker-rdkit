@@ -4,11 +4,11 @@
 # build the deb packages so we need to install the packages using apt to have tight control over this.
 #
 
-FROM debian:bullseye
+FROM debian:bookworm
 LABEL maintainer="Tim Dudgeon<tdudgeon@informaticsmatters.com>"
 
-ENV PG_MAJOR=13
-ENV BOOST_VER=1.74.0
+ENV PG_MAJOR=15
+ENV BOOST_VER=1.81.0
 ARG DOCKER_TAG=latest
 
 RUN apt-get update &&\
