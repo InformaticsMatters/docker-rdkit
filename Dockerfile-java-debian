@@ -5,12 +5,14 @@ FROM debian:bookworm
 LABEL maintainer="Tim Dudgeon<tdudgeon@informaticsmatters.com>"
 
 ARG TARGETARCH
-ARG BOOST_VER=1.74.0
+ARG BOOST_VER=1.81
 
 RUN apt-get update &&\
  apt-get upgrade -y &&\
  apt-get install -y --no-install-recommends\
  openjdk-17-jre-headless\
+ libboost$BOOST_VER\
+ libboost$BOOST_VER-dev\
  libboost-system$BOOST_VER\
  libboost-thread$BOOST_VER\
  libboost-serialization$BOOST_VER\
