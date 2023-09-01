@@ -30,7 +30,7 @@ docker buildx build $DBO -f Dockerfile-python3-debian \
  --build-arg DOCKER_TAG=$DOCKER_TAG .
 echo "Built image ${BASE}/rdkit-python3-debian:$DOCKER_TAG"
 
-build image for java on debian
+# build image for java on debian
 docker buildx build $DBO -f Dockerfile-java-debian \
  --platform linux/arm64,linux/amd64 --push \
  -t $BASE/rdkit-java-debian:$DOCKER_TAG \
