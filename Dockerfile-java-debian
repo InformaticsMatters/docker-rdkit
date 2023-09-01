@@ -5,7 +5,7 @@ FROM debian:bookworm
 LABEL maintainer="Tim Dudgeon<tdudgeon@informaticsmatters.com>"
 
 ARG TARGETARCH
-ARG BOOST_VER=1.81.0
+ARG BOOST_VER=1.74.0
 
 RUN apt-get update &&\
  apt-get upgrade -y &&\

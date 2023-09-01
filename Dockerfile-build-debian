@@ -10,7 +10,7 @@ ARG GIT_BRANCH=master
 ARG GIT_TAG
 ARG TARGETARCH
 ARG POSTGRES_VERSION=15
-ARG BOOST_VER=1.81-dev
+ARG BOOST_VER=1.81
 
 RUN apt-get update &&\
   apt-get install -y --no-install-recommends \
@@ -22,6 +22,7 @@ RUN apt-get update &&\
   sqlite3\
   libsqlite3-dev\
   libboost$BOOST_VER\
+  libboost$BOOST_VER-dev\
   libboost-system$BOOST_VER\
   libboost-thread$BOOST_VER\
   libboost-serialization$BOOST_VER\

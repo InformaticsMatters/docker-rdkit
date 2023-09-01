@@ -12,8 +12,11 @@ source params.sh
 
 # build RDKit
 docker build --no-cache -f Dockerfile-build-centos\
+  --platform $ARCH --push \
   -t $BASE/rdkit-build-centos:$DOCKER_TAG\
-  --build-arg RDKIT_BRANCH=$GIT_BRANCH .
+  --build-arg GIT_REPO=$GIT_REPO\
+  --build-arg GIT_BRANCH=$GIT_BRANCH\
+  --build-arg GIT_TAG=$GIT_TAG .
 
 # copy the packages
 rm -rf artifacts/centos/$DOCKER_TAG
@@ -26,14 +29,14 @@ docker run -it --rm -u $(id -u)\
 
 # build image for python
 docker build --no-cache -f Dockerfile-python3-centos\
+  --platform $ARCH --push \
   -t $BASE/rdkit-python3-centos:$DOCKER_TAG\
   --build-arg TAG=$DOCKER_TAG .
 echo "Built image ${BASE}/rdkit-python3-centos:$DOCKER_TAG"
 
 # build image for java
 docker build --no-cache -f Dockerfile-java-centos\
+  --platform $ARCH --push \
   -t $BASE/rdkit-java-centos:$DOCKER_TAG\
   --build-arg TAG=$DOCKER_TAG .
 echo "Built image ${BASE}/rdkit-java-centos:$DOCKER_TAG"
-
-
