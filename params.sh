@@ -1,6 +1,6 @@
-export DOCKER_TAG=Release_2023_03
+export DOCKER_TAG=latest
 export GIT_REPO=https://github.com/rdkit/rdkit.git
-export GIT_BRANCH=Release_2023_03
+export GIT_BRANCH=master
 unset GIT_TAG
 
 export BASE=nmunro

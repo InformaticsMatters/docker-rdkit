@@ -12,6 +12,7 @@ docker buildx build $DBO -f Dockerfile-build-debian \
   -t $BASE/rdkit-build-debian:$DOCKER_TAG \
   --build-arg GIT_REPO=$GIT_REPO\
   --build-arg GIT_BRANCH=$GIT_BRANCH\
+  --build-arg DEB_PACKAGE_DETAILS=$(echo $GIT_BRANCH | cut -d_ -f2 -f3)\
   --build-arg GIT_TAG=$GIT_TAG .
 
 # copy the packages

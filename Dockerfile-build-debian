@@ -11,6 +11,8 @@ ARG GIT_TAG
 ARG TARGETARCH
 ARG POSTGRES_VERSION=15
 ARG BOOST_VER=1.81
+ARG DEB_PACKAGE_DETAILS
+ARG DEB_PACKAGE_NAME=RDKit-${DEB_PACKAGE_DETAILS}-Linux-Python_${TARGETARCH}.deb
 
 RUN apt-get update &&\
   apt-get install -y --no-install-recommends \
@@ -75,7 +77,7 @@ RUN nproc=$(getconf _NPROCESSORS_ONLN)\
   && make -j $(( nproc > 2 ? nproc - 2 : 1 ))
 RUN make install
 RUN sh Code/PgSQL/rdkit/pgsql_install.sh
-RUN cpack -G DEB
+RUN cpack -D CPACK_DEBIAN_FILE_NAME=${DEB_PACKAGE_NAME} -G DEB
 RUN cd /rdkit/Code/JavaWrappers/gmwrapper && tar cvfz javadoc.tgz doc
 
 WORKDIR $RDBASE
