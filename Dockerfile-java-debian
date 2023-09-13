@@ -27,7 +27,7 @@ RUN apt-get update &&\
 ARG DOCKER_TAG=latest
 
 COPY artifacts/debian/$DOCKER_TAG/java/* /rdkit/gmwrapper/
-COPY artifacts/debian/$DOCKER_TAG/debs/RDKit-*-Linux-Runtime.deb /tmp/
+COPY artifacts/debian/$DOCKER_TAG/debs/RDKit-*-Linux-Runtime_${TARGETARCH}.deb /tmp/
 RUN dpkg -i /tmp/*.deb && rm -f /tmp/*.deb
 WORKDIR /
 

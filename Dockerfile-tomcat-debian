@@ -4,6 +4,8 @@
 FROM informaticsmatters/tomcat:8.5-jre11
 LABEL maintainer="Tim Dudgeon<tdudgeon@informaticsmatters.com>"
 
+ARG TARGETARCH
+
 USER root
 
 RUN apt-get update &&\
@@ -24,7 +26,7 @@ RUN apt-get update &&\
 ARG DOCKER_TAG=latest
 
 COPY artifacts/debian/$DOCKER_TAG/java/* /rdkit/gmwrapper/
-COPY artifacts/debian/$DOCKER_TAG/debs/RDKit-*-Linux-Runtime.deb /tmp/
+COPY artifacts/debian/$DOCKER_TAG/debs/RDKit-*-Linux-Runtime_${TARGETARCH}.deb /tmp/
 RUN dpkg -i /tmp/*.deb && rm -f /tmp/*.deb
 
 USER 501
