@@ -5,6 +5,16 @@ set -xe
 source params.sh
 
 #DBO=${DOCKER_BUILD_OPTS:---no-cache}
+function get_deb_package_name() {
+   if [[ $GIT_BRANCH = "master" ]]
+   then
+      echo $GIT_BRANCH
+   else
+       echo $GIT_BRANCH | cut -d_ -f2 -f3
+   fi
+}
+
+res="$(get_deb_package_name)"
 
 # build RDKit
 docker buildx build $DBO -f Dockerfile-build-debian \
@@ -13,7 +23,7 @@ docker buildx build $DBO -f Dockerfile-build-debian \
   -t $BASE/rdkit-build-debian:$DOCKER_TAG \
   --build-arg GIT_REPO=$GIT_REPO\
   --build-arg GIT_BRANCH=$GIT_BRANCH\
-  --build-arg DEB_PACKAGE_DETAILS=$(echo $GIT_BRANCH | cut -d_ -f2 -f3)\
+  --build-arg DEB_PACKAGE_DETAILS=$res\
   --build-arg GIT_TAG=$GIT_TAG .
 
 # copy the packages
