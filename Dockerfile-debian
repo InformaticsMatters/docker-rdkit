@@ -1,0 +1,283 @@
+# Multi-stage Dockerfile for building RDKit artifacts.
+# The build image is a heavyweight image containing all aspects of RDKit plus the build system.
+# It's artifacts are then used in the subsequent images to create lightweight images.
+
+################################# base image ########################################
+# This image contains the artifacts used by the later stages.
+# The image is NOT pushed, just the cached layers used.
+
+FROM debian:bookworm as build
+LABEL maintainer="Tim Dudgeon<tdudgeon@informaticsmatters.com>"
+
+ARG GIT_REPO=https://github.com/rdkit/rdkit.git
+ARG GIT_BRANCH=master
+ARG GIT_TAG
+ARG POSTGRES_VERSION=15
+ARG BOOST_VER=1.81
+ARG JAVA_VERSION=17
+
+RUN apt-get update &&\
+  apt-get install -y --no-install-recommends \
+  build-essential\
+  python3-dev\
+  python3-numpy\
+  python3-pip\
+  cmake\
+  sqlite3\
+  libsqlite3-dev\
+  libboost$BOOST_VER\
+  libboost$BOOST_VER-dev\
+  libboost-system$BOOST_VER\
+  libboost-thread$BOOST_VER\
+  libboost-serialization$BOOST_VER\
+  libboost-python$BOOST_VER\
+  libboost-regex$BOOST_VER\
+  libboost-iostreams$BOOST_VER\
+  zlib1g-dev\
+  swig\
+  libeigen3-dev\
+  git\
+  wget\
+  openjdk-$JAVA_VERSION-jdk\
+  postgresql-$POSTGRES_VERSION\
+  postgresql-server-dev-$POSTGRES_VERSION\
+  postgresql-plpython3-$POSTGRES_VERSION\
+  zip\
+  unzip\
+  libfreetype6-dev &&\
+  apt-get clean -y
+
+
+RUN if [ $GIT_TAG ]; then echo "Checking out tag $GIT_TAG from repo $GIT_REPO branch $GIT_BRANCH"; else echo "Checking out repo $GIT_REPO branch $GIT_BRANCH"; fi
+RUN git clone -b $GIT_BRANCH --single-branch $GIT_REPO &&\
+  if [ $GIT_TAG ]; then cd rdkit && git fetch --tags && git checkout $GIT_TAG; fi
+
+ENV RDBASE=/rdkit
+ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$RDBASE/lib:$RDBASE/Code/JavaWrappers/gmwrapper:/usr/lib/x86_64-linux-gnu:/usr/lib/aarch64-linux-gnu/
+ENV PYTHONPATH=$PYTHONPATH:$RDBASE
+RUN ln -s $(ls -d /usr/lib/jvm/java-$JAVA_VERSION-openjdk-*) /usr/lib/jvm/java-$JAVA_VERSION-openjdk
+ENV JAVA_HOME=/usr/lib/jvm/java-$JAVA_VERSION-openjdk
+ENV CLASSPATH=$RDBASE/Code/JavaWrappers/gmwrapper/org.RDKit.jar
+
+RUN mkdir $RDBASE/build
+WORKDIR $RDBASE/build
+
+RUN cmake -Wno-dev\
+  -DPYTHON_EXECUTABLE=/usr/bin/python3\
+  -DRDK_INSTALL_INTREE=OFF\
+  -DRDK_BUILD_INCHI_SUPPORT=ON\
+  -DRDK_BUILD_AVALON_SUPPORT=ON\
+  -DRDK_BUILD_PYTHON_WRAPPERS=ON\
+  -DRDK_BUILD_SWIG_WRAPPERS=ON\
+  -DRDK_BUILD_PGSQL=ON\
+  -DPostgreSQL_ROOT=/usr/lib/postgresql/$POSTGRES_VERSION\
+  -DPostgreSQL_TYPE_INCLUDE_DIR=/usr/include/postgresql/$POSTGRES_VERSION/server\
+  -DCMAKE_INSTALL_PREFIX=/usr\
+  -DCPACK_PACKAGE_RELOCATABLE=OFF\
+  ..
+
+RUN nproc=$(getconf _NPROCESSORS_ONLN)\
+  && make -j $(( nproc > 2 ? nproc - 2 : 1 ))
+RUN make install
+RUN sh Code/PgSQL/rdkit/pgsql_install.sh
+RUN cpack -G DEB
+RUN cd /rdkit/Code/JavaWrappers/gmwrapper && tar cvfz javadoc.tgz doc
+
+WORKDIR $RDBASE
+
+################################# Python image ######################################
+
+FROM debian:bookworm AS python
+LABEL maintainer="Tim Dudgeon<tdudgeon@informaticsmatters.com>"
+
+ARG BOOST_VER=1.81.0
+
+RUN apt-get update &&\
+  apt-get upgrade -y &&\ 
+  apt-get install -y --no-install-recommends\
+  python3\
+  python3-dev\
+  python3-numpy\
+  python3-pip\
+  python3-setuptools\
+  python3-wheel\
+  python3-six\
+  python-is-python3\
+  gcc\
+  libboost-system$BOOST_VER\
+  libboost-thread$BOOST_VER\
+  libboost-serialization$BOOST_VER\
+  libboost-python$BOOST_VER\
+  libboost-regex$BOOST_VER\
+  libboost-chrono$BOOST_VER\
+  libboost-date-time$BOOST_VER\
+  libboost-atomic$BOOST_VER\
+  libboost-iostreams$BOOST_VER\
+  sqlite3\
+  wget\
+  zip\
+  libfreetype6 &&\
+  apt-get clean -y
+
+
+COPY --from=build /rdkit/build/RDKit-*Linux-Runtime.deb /rdkit/build/RDKit-*Linux-Python.deb /tmp/
+RUN dpkg -i /tmp/RDKit-*.deb && rm -f /tmp/*.deb
+
+ENV RDBASE=/usr/share/RDKit
+
+# since the 2023 builds cpack seems to putting things under site-packages rather than dist-packages 
+ENV PYTHONPATH=/usr/lib/python3.11/site-packages
+
+WORKDIR /
+
+# add the rdkit user
+RUN useradd -u 1000 -g 0 -m rdkit
+USER 1000
+
+
+################################# Java image ########################################
+
+# Dockerfile for Java based RDKit implementation
+# Based on Debian.
+
+FROM debian:bookworm AS java
+LABEL maintainer="Tim Dudgeon<tdudgeon@informaticsmatters.com>"
+
+ARG BOOST_VER=1.81
+ARG JAVA_VERSION=17
+
+RUN apt-get update &&\
+  apt-get upgrade -y &&\
+  apt-get install -y --no-install-recommends\
+  openjdk-$JAVA_VERSION-jre-headless\
+  libboost$BOOST_VER\
+  libboost$BOOST_VER-dev\
+  libboost-system$BOOST_VER\
+  libboost-thread$BOOST_VER\
+  libboost-serialization$BOOST_VER\
+  libboost-regex$BOOST_VER\
+  libboost-chrono$BOOST_VER\
+  libboost-date-time$BOOST_VER\
+  libboost-atomic$BOOST_VER\
+  libboost-iostreams$BOOST_VER\
+  libfreetype6 &&\
+  apt-get clean -y
+
+COPY --from=build /rdkit/Code/JavaWrappers/gmwrapper/org.RDKit.jar /rdkit/Code/JavaWrappers/gmwrapper/libGraphMolWrap.so /rdkit/gmwrapper/
+COPY --from=build /rdkit/build/RDKit-*-Linux-Runtime.deb /tmp/
+RUN dpkg -i /tmp/*.deb && rm -f /tmp/*.deb
+
+WORKDIR /
+
+RUN ln -s $(ls -d /usr/lib/jvm/java-$JAVA_VERSION-openjdk-*) /usr/lib/jvm/java-$JAVA_VERSION-openjdk
+ENV JAVA_HOME=/usr/lib/jvm/java-$JAVA_VERSION-openjdk
+ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/rdkit/gmwrapper
+ENV CLASSPATH=/rdkit/gmwrapper/org.RDKit.jar
+ENV RDBASE=/usr/share/RDKit
+
+# add the rdkit user
+RUN useradd -u 1000 -U -G 0 -m rdkit
+USER 1000
+
+
+################################# Tomcat image ######################################
+
+FROM informaticsmatters/tomcat:8.5-jre11 AS tomcat
+LABEL maintainer="Tim Dudgeon<tdudgeon@informaticsmatters.com>"
+
+USER root
+
+RUN apt-get update &&\
+ apt-get upgrade -y &&\ 
+ apt-get install -y --no-install-recommends\
+ unzip\
+ libboost-system1.74.0\
+ libboost-thread1.74.0\
+ libboost-serialization1.74.0\
+ libboost-regex1.74.0\
+ libboost-chrono1.74.0\
+ libboost-date-time1.74.0\
+ libboost-atomic1.74.0\
+ libboost-iostreams1.74.0\
+ libfreetype6-dev &&\
+ apt-get clean -y
+
+COPY --from=build /rdkit/Code/JavaWrappers/gmwrapper/org.RDKit.jar /rdkit/Code/JavaWrappers/gmwrapper/libGraphMolWrap.so /rdkit/gmwrapper/
+COPY --from=build /rdkit/build/RDKit-*-Linux-Runtime.deb /tmp/
+RUN dpkg -i /tmp/*.deb && rm -f /tmp/*.deb
+
+USER 501
+
+WORKDIR $CATALINA_HOME
+ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/rdkit/gmwrapper
+ENV CLASSPATH=/rdkit/gmwrapper/org.RDKit.jar
+ENV RDBASE=/usr/share/RDKit/
+
+RUN echo "CLASSPATH=/rdkit/gmwrapper/org.RDKit.jar\n" > /usr/local/tomcat/bin/setenv.sh
+
+
+################################# Cartridge image ###################################
+# Dockerfile for RDKit cartridge based on Debian.
+# This image is inspired by the docker.io:/library/postgres image, and uses the docker-entrypoint.sh 
+# file from there, but there is a need to have the exact same versions of libraries that were used to 
+# build the deb packages so we need to install the packages using apt to have tight control over this.
+#
+
+FROM debian:bookworm AS cartridge
+LABEL maintainer="Tim Dudgeon<tdudgeon@informaticsmatters.com>"
+
+ENV PG_MAJOR=15
+ENV BOOST_VER=1.81.0
+
+RUN apt-get update &&\
+ apt-get upgrade -y &&\ 
+ apt-get install -y --no-install-recommends\
+ python3\
+ python3-numpy\
+ python-is-python3\
+ libboost-system$BOOST_VER\
+ libboost-thread$BOOST_VER\
+ libboost-serialization$BOOST_VER\
+ libboost-python$BOOST_VER\
+ libboost-regex$BOOST_VER\
+ libboost-chrono$BOOST_VER\
+ libboost-date-time$BOOST_VER\
+ libboost-atomic$BOOST_VER\
+ libboost-iostreams$BOOST_VER\
+ libfreetype6\ 
+ postgresql-$PG_MAJOR\
+ postgresql-client-$PG_MAJOR\
+ postgresql-plpython3-$PG_MAJOR\
+ pgtop\
+ gosu\
+ wget\
+ zip &&\
+ apt-get clean -y
+
+COPY --from=build /rdkit/build/RDKit-*Linux-Runtime.deb /rdkit/build/RDKit-*Linux-Python.deb /tmp/
+RUN dpkg -i /tmp/RDKit-*.deb && rm -f /tmp/*.deb
+
+WORKDIR /
+
+# make the sample config easier to munge (and "correct by default")
+RUN mv -v "/usr/share/postgresql/$PG_MAJOR/postgresql.conf.sample" /usr/share/postgresql/ \
+  && ln -sv ../postgresql.conf.sample "/usr/share/postgresql/$PG_MAJOR/" \
+  && sed -ri "s!^#?(listen_addresses)\s*=\s*\S+.*!\1 = '*'!" /usr/share/postgresql/postgresql.conf.sample
+
+RUN mkdir -p /var/run/postgresql && chown -R postgres:postgres /var/run/postgresql && chmod 2777 /var/run/postgresql
+
+ENV RDBASE=/usr/share/RDKit
+ENV PGDATA /var/lib/postgresql/data
+ENV PATH $PATH:/usr/lib/postgresql/$PG_MAJOR/bin
+# this 777 will be replaced by 700 at runtime (allows semi-arbitrary "--user" values)
+RUN mkdir -p "$PGDATA" && chown -R postgres:postgres "$PGDATA" && chmod 777 "$PGDATA"
+VOLUME /var/lib/postgresql/data
+
+COPY docker-entrypoint-cartridge.sh /usr/local/bin/docker-entrypoint.sh
+RUN ln -s usr/local/bin/docker-entrypoint.sh / # backwards compat
+ENTRYPOINT ["docker-entrypoint.sh"]
+
+EXPOSE 5432
+CMD ["postgres"]
+
+

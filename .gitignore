@@ -3,4 +3,5 @@
 .idea
 docker-rdkit.iml
 artifacts/
+build.log
 .DS_Store
