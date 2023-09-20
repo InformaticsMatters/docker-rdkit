@@ -1,11 +1,13 @@
 # Dockerfiles for building RDKit.
 
-These images superceed the existing informaticsmatters/rdkit_* Docker images.
+These images supersede the existing informaticsmatters/rdkit_* Docker images.
 
-These Dockerfiles and shell scripts are for building various Docker images for RDKit. The aim is to build a number of lightweight images that are suited for running in production cloud environments like Kubernetes and OpenShift. For this purpose the images need to be:
+These Dockerfiles and shell scripts are for building various Docker images for RDKit. The aim is to build a number of
+lightweight images that are suited for running in production cloud environments like Kubernetes and OpenShift. For this
+purpose the images need to be:
 
-1. as small as is reasonable to minimise dowload time and reduce the potential attack surface 
-1. run as a non-root user or an arbitarily assigned user ID.
+1. as small as is reasonable to minimise download time and reduce the potential attack surface 
+2. run as a non-root user or an arbitrarily assigned user ID.
 
 The approach taken to build these images currently follows the [builder pattern](https://blog.alexellis.io/mutli-stage-docker-builds/).
 See the [Smaller containers](https://www.informaticsmatters.com/category/containers/index.html) series of posts on the 
@@ -15,13 +17,15 @@ For each RDKit version (image tag) we build a number of images:
 
 * [informaticsmatters/rdkit-build-debian](https://hub.docker.com/r/informaticsmatters/rdkit-build-debian/) - this does a full build of RDKit from source. The result is a kitchen sink image (almost 2GB in size) that contains the entire build infrastructure and eveything that is built. The main purpose of this image is to build the artifacts needed for assembling the other lightweight images. Whist this image might be of some use for personal hacking it is NOT suitable for a public facing system as it is so large and has such a big attack surface. Earlier versions were named `informaticsmatters/rdkit-build`. NOTE: we have stopped pushing this image as it is large and not very useful.
 * [informaticsmatters/rdkit-python-debian](https://hub.docker.com/r/informaticsmatters/rdkit-python-debian/) - a Debian based distribution designed for running RDKit from Python 2. The image size is approx 400MB. The last Python 2 images are for the `Release_2018_09` release.
-* [informaticsmatters/rdkit-python3-debian](https://hub.docker.com/r/informaticsmatters/rdkit-python3-debian/) - a Debian based distribution designed for running RDKit from Python 3. Thes images start from the `Release_2019_03` release.
+* [informaticsmatters/rdkit-python3-debian](https://hub.docker.com/r/informaticsmatters/rdkit-python3-debian/) - a Debian based distribution designed for running RDKit from Python 3. These images start from the `Release_2019_03` release.
 * [informaticsmatters/rdkit-java-debian](https://hub.docker.com/r/informaticsmatters/rdkit-java-debian/) - a Debian based distribution designed for running RDKit from Java.
 * [informaticsmatters/rdkit-tomcat-debian](https://hub.docker.com/r/informaticsmatters/rdkit-tomcat-debian/) -  a Debian based distribution designed for running a servlet in Apache Tomcat that uses the RDKit Java bindings. You need to provide the war file with the web application.
 * [informaticsmatters/rdkit-cartridge-debian](https://hub.docker.com/r/informaticsmatters/rdkit-cartridge-debian/) - a Debian based distribution with PostgreSQL and the RDKit cartridge. Note that we were unable to build cartridge images for the 2021_09 and 2022_03 based releases.
 * [informaticsmatters/rdkit-build-centos](https://hub.docker.com/r/informaticsmatters/rdkit-build-centos/) - Kitchen sink build image equivalent to `informaticsmatters/rdkit-build-debian`.
 * [informaticsmatters/rdkit-python3-centos](https://hub.docker.com/r/informaticsmatters/rdkit-python3-centos/) - a Centos based distribution designed for running RDKit from Python 3. Thes images start from the `Release_2019_09` release.
 * [informaticsmatters/rdkit-java-centos](https://hub.docker.com/r/informaticsmatters/rdkit-java-centos/) - a Centos based distribution designed for running RDKit from Java.
+
+Note: we primarily focus on the Debian based images. Other platforms are not so well maintained.
 
 ## Branches
 
@@ -80,20 +84,21 @@ To create images for a new version of RDKit you should only need to create a new
 
 ## Build and run
 
-Create the docker images like this:
+Since October 2023 we have switched to a multi-stage build and are building images for amd64 and arm64 architectures.
+Thanks to @nmunro and @artran for assistance with building on arm64.
+You need to use the `buildx` extensions to build these images. The Dockerfile-debian is the multi-stage Dockerfile
+that builds all the images, and it is run by executing `build-debian.sh`, which is parameterised through the contents
+of `params.sh`.
 
-`./build.sh`
+The `build` stage builds RDKit form the appropriate GitHub branch for RDKit, and creates the deb packages and the Java 
+artifacts from it for use in the `python`, `java`, `tomcat` and `cartridge` stages.
+Each subsequent stage is run separately and the images pushed to dockerhub. Note: only the amd64 is currently built for
+the `tomcat` image.
 
-This builds the main `rdkit-build` image and then extracts the deb and rpm packages and the Java artifacts from it for use in assembling
-the other images, and then assembles those `rdkit-python-debian`, `rdkit-java-debian` and `rdkit-tomcat-debian` images.
-
-Push the images to Docker Hub like this:
-
-`./push.sh`
 
 Run the Python image like this:
 
-`docker run -it --rm informaticsmatters/rdkit-python-debian:<tag_name> python`
+`docker run -it --rm informaticsmatters/rdkit-python3-debian:<tag_name> python`
 
 Run the Java image like this:
 
@@ -123,7 +128,7 @@ Javadocs are built into `/rdkit/Code/JavaWrappers/gmwrapper/doc`. Since the 2019
 ## RDBASE environment variable
 
 In old versions of the images the RDBASE environment variable was set incorrectly which would impact functions where RDKit
-needs to read it's internal data files. Since the `2020_03`, `2019_09` and `2019_09_3` images this should be correctly set, but older images will
+needs to read its internal data files. Since the `2020_03`, `2019_09` and `2019_09_3` images this should be correctly set, but older images will
 suffer this problem and to fix it you must define the RDBASE environment variable when you run the container and set it
 to a value of `/usr/share/RDKit`. e.g. `docker run -it -e RDBASE=/usr/share/RDKit ...`
 
@@ -140,11 +145,12 @@ images from 2019 onwards are built with Java 11.
 
 ## RDKit cartridge
 
-We have now started to handle the RDKit postgres cartridge in a debian environment as a series of `informaticsmatters/rdkit-cartridge-debian` images.
+We have now started to handle the RDKit postgres cartridge in a debian environment as a series of 
+`informaticsmatters/rdkit-cartridge-debian` images.
 This started with the `Release_2018_09` images. 
 
-If you want to use the cartridge in the `informaticsmatters/rdkit-cartridge-debian:latest` image then try something like this.
-
+If you want to use the cartridge in the `informaticsmatters/rdkit-cartridge-debian:latest` image then try something
+like this:
 
 ```
 # start the container
