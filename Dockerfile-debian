@@ -254,7 +254,11 @@ RUN apt-get update &&\
  zip &&\
  apt-get clean -y
 
-COPY --from=build /rdkit/build/RDKit-*Linux-Runtime.deb /rdkit/build/RDKit-*Linux-Python.deb /tmp/
+COPY --from=build \
+  /rdkit/build/RDKit-*Linux-Runtime.deb \
+  /rdkit/build/RDKit-*Linux-Python.deb \
+  /rdkit/build/RDKit-*-Linux-PgSQL.deb \
+  /tmp/
 RUN dpkg -i /tmp/RDKit-*.deb && rm -f /tmp/*.deb
 
 WORKDIR /
@@ -272,6 +276,8 @@ ENV PATH $PATH:/usr/lib/postgresql/$PG_MAJOR/bin
 # this 777 will be replaced by 700 at runtime (allows semi-arbitrary "--user" values)
 RUN mkdir -p "$PGDATA" && chown -R postgres:postgres "$PGDATA" && chmod 777 "$PGDATA"
 VOLUME /var/lib/postgresql/data
+
+ENV PYTHONPATH=/usr/lib/python3.11/site-packages
 
 COPY docker-entrypoint-cartridge.sh /usr/local/bin/docker-entrypoint.sh
 RUN ln -s usr/local/bin/docker-entrypoint.sh / # backwards compat
