@@ -273,6 +273,8 @@ ENV PATH $PATH:/usr/lib/postgresql/$PG_MAJOR/bin
 RUN mkdir -p "$PGDATA" && chown -R postgres:postgres "$PGDATA" && chmod 777 "$PGDATA"
 VOLUME /var/lib/postgresql/data
 
+ENV PYTHONPATH=/usr/lib/python3.11/site-packages
+
 COPY docker-entrypoint-cartridge.sh /usr/local/bin/docker-entrypoint.sh
 RUN ln -s usr/local/bin/docker-entrypoint.sh / # backwards compat
 ENTRYPOINT ["docker-entrypoint.sh"]
