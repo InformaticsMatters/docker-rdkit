@@ -91,7 +91,8 @@ experimental. Please report any issue you may find.
 
 You need to use the `buildx` extensions to build these images. The Dockerfile-debian is the multi-stage Dockerfile
 that builds all the images, and it is run by executing `build-debian.sh`, which is parameterised through the contents
-of `params.sh`.
+of `params.sh`. To be able to run this you probably will need to enable buildx using a command like this:
+`docker buildx create --use`.
 
 The `build` stage builds RDKit form the appropriate GitHub branch for RDKit, and creates the deb packages and the Java 
 artifacts from it for use in the `python`, `java`, `tomcat` and `cartridge` stages.
