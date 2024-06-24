@@ -28,14 +28,14 @@ docker buildx build $DBO -f $DOCKERFILE \
 echo "Built images $BASE/rdkit-java-debian:$DOCKER_TAG"
 
 # build image for tomcat on debian
-docker buildx build $DBO -f $DOCKERFILE \
-  --platform linux/amd64 \
-  --target tomcat \
-  -t $BASE/rdkit-tomcat-debian:$DOCKER_TAG \
-  --build-arg GIT_REPO=$GIT_REPO \
-  --build-arg GIT_BRANCH=$GIT_BRANCH \
-  --push .
-echo "Built images $BASE/rdkit-tomcat-debian:$DOCKER_TAG"
+#docker buildx build $DBO -f $DOCKERFILE \
+#  --platform linux/amd64 \
+#  --target tomcat \
+#  -t $BASE/rdkit-tomcat-debian:$DOCKER_TAG \
+#  --build-arg GIT_REPO=$GIT_REPO \
+#  --build-arg GIT_BRANCH=$GIT_BRANCH \
+#  --push .
+#echo "Built images $BASE/rdkit-tomcat-debian:$DOCKER_TAG"
 
 # build image for cartridge on debian
 docker buildx build $DBO -f $DOCKERFILE \

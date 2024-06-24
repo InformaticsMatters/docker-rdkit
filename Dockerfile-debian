@@ -6,15 +6,15 @@
 # This image contains the artifacts used by the later stages.
 # The image is NOT pushed, just the cached layers used.
 
-FROM debian:bullseye as build
+FROM debian:bookworm as build
 LABEL maintainer="Tim Dudgeon<tdudgeon@informaticsmatters.com>"
 
 ARG GIT_REPO=https://github.com/rdkit/rdkit.git
 ARG GIT_BRANCH=master
 ARG GIT_TAG
-ARG POSTGRES_VERSION=13
-ARG BOOST_VER=1.74
-ARG JAVA_VERSION=11
+ARG POSTGRES_VERSION=15
+ARG BOOST_VER=1.81
+ARG JAVA_VERSION=17
 
 RUN apt-get update &&\
   apt-get install -y --no-install-recommends \
@@ -87,10 +87,10 @@ WORKDIR $RDBASE
 
 ################################# Python image ######################################
 
-FROM debian:bullseye AS python
+FROM debian:bookworm AS python
 LABEL maintainer="Tim Dudgeon<tdudgeon@informaticsmatters.com>"
 
-ARG BOOST_VER=1.74
+ARG BOOST_VER=1.81
 
 RUN apt-get update &&\
   apt-get upgrade -y &&\
@@ -140,11 +140,11 @@ USER 1000
 # Dockerfile for Java based RDKit implementation
 # Based on Debian.
 
-FROM debian:bullseye AS java
+FROM debian:bookworm AS java
 LABEL maintainer="Tim Dudgeon<tdudgeon@informaticsmatters.com>"
 
-ARG BOOST_VER=1.74
-ARG JAVA_VERSION=11
+ARG BOOST_VER=1.81
+ARG JAVA_VERSION=17
 
 RUN apt-get update &&\
   apt-get upgrade -y &&\
@@ -169,7 +169,7 @@ RUN dpkg -i /tmp/*.deb && rm -f /tmp/*.deb
 
 WORKDIR /
 
-RUN ln -s $(ls -d /usr/lib/jvm/java-$JAVA_VERSION-openjdk-*) /usr/lib/jvm/java-$JAVA_VERSION-openjdk
+RUN ln -s $(ls -d /usr/lib/jvm/java-$7AVA_VERSION-openjdk-*) /usr/lib/jvm/java-$JAVA_VERSION-openjdk
 ENV JAVA_HOME=/usr/lib/jvm/java-$JAVA_VERSION-openjdk
 ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/rdkit/gmwrapper
 ENV CLASSPATH=/rdkit/gmwrapper/org.RDKit.jar
@@ -182,38 +182,38 @@ USER 1000
 
 ################################# Tomcat image ######################################
 
-FROM informaticsmatters/tomcat:8.5-jre11 AS tomcat
-LABEL maintainer="Tim Dudgeon<tdudgeon@informaticsmatters.com>"
+#FROM informaticsmatters/tomcat:8.5-jre11 AS tomcat
+#LABEL maintainer="Tim Dudgeon<tdudgeon@informaticsmatters.com>"
 
-USER root
+#USER root
 
-RUN apt-get update &&\
- apt-get upgrade -y &&\
- apt-get install -y --no-install-recommends\
- unzip\
- libboost-system1.74.0\
- libboost-thread1.74.0\
- libboost-serialization1.74.0\
- libboost-regex1.74.0\
- libboost-chrono1.74.0\
- libboost-date-time1.74.0\
- libboost-atomic1.74.0\
- libboost-iostreams1.74.0\
- libfreetype6-dev &&\
- apt-get clean -y
+#RUN apt-get update &&\
+# apt-get upgrade -y &&\
+# apt-get install -y --no-install-recommends\
+# unzip\
+# libboost-system1.74.0\
+# libboost-thread1.74.0\
+# libboost-serialization1.74.0\
+# libboost-regex1.74.0\
+# libboost-chrono1.74.0\
+# libboost-date-time1.74.0\
+# libboost-atomic1.74.0\
+# libboost-iostreams1.74.0\
+# libfreetype6-dev &&\
+# apt-get clean -y
 
-COPY --from=build /rdkit/Code/JavaWrappers/gmwrapper/org.RDKit.jar /rdkit/Code/JavaWrappers/gmwrapper/libGraphMolWrap.so /rdkit/gmwrapper/
-COPY --from=build /rdkit/build/RDKit-*-Linux-Runtime.deb /tmp/
-RUN dpkg -i /tmp/*.deb && rm -f /tmp/*.deb
+#COPY --from=build /rdkit/Code/JavaWrappers/gmwrapper/org.RDKit.jar /rdkit/Code/JavaWrappers/gmwrapper/libGraphMolWrap.so /rdkit/gmwrapper/
+#COPY --from=build /rdkit/build/RDKit-*-Linux-Runtime.deb /tmp/
+#RUN dpkg -i /tmp/*.deb && rm -f /tmp/*.deb
 
-USER 501
+#USER 501
 
-WORKDIR $CATALINA_HOME
-ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/rdkit/gmwrapper
-ENV CLASSPATH=/rdkit/gmwrapper/org.RDKit.jar
-ENV RDBASE=/usr/share/RDKit/
+#WORKDIR $CATALINA_HOME
+#ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/rdkit/gmwrapper
+#ENV CLASSPATH=/rdkit/gmwrapper/org.RDKit.jar
+#ENV RDBASE=/usr/share/RDKit/
 
-RUN echo "CLASSPATH=/rdkit/gmwrapper/org.RDKit.jar\n" > /usr/local/tomcat/bin/setenv.sh
+#RUN echo "CLASSPATH=/rdkit/gmwrapper/org.RDKit.jar\n" > /usr/local/tomcat/bin/setenv.sh
 
 
 ################################# Cartridge image ###################################
@@ -223,11 +223,11 @@ RUN echo "CLASSPATH=/rdkit/gmwrapper/org.RDKit.jar\n" > /usr/local/tomcat/bin/se
 # build the deb packages so we need to install the packages using apt to have tight control over this.
 #
 
-FROM debian:bullseye AS cartridge
+FROM debian:bookworm AS cartridge
 LABEL maintainer="Tim Dudgeon<tdudgeon@informaticsmatters.com>"
 
-ENV PG_MAJOR=13
-ENV BOOST_VER=1.74
+ENV PG_MAJOR=15
+ENV BOOST_VER=1.81
 
 RUN apt-get update &&\
  apt-get upgrade -y &&\
