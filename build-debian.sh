@@ -29,7 +29,7 @@ echo "Built images $BASE/rdkit-java-debian:$DOCKER_TAG"
 
 # build image for tomcat on debian
 docker buildx build $DBO -f $DOCKERFILE \
-  --platform linux/amd64 \
+  --platform linux/amd64,linux/arm64 \
   --target tomcat \
   -t $BASE/rdkit-tomcat-debian:$DOCKER_TAG \
   --build-arg GIT_REPO=$GIT_REPO \
