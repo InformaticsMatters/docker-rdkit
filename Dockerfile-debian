@@ -6,14 +6,14 @@
 # This image contains the artifacts used by the later stages.
 # The image is NOT pushed, just the cached layers used.
 
-FROM debian:bookworm as build
+FROM debian:trixie as build
 LABEL maintainer="Tim Dudgeon<tdudgeon@informaticsmatters.com>"
 
 ARG GIT_REPO=https://github.com/rdkit/rdkit.git
 ARG GIT_BRANCH=master
 ARG GIT_TAG
-ARG POSTGRES_VERSION=15
-ARG BOOST_VER=1.81
+ARG POSTGRES_VERSION=17
+ARG BOOST_VER=1.83
 ARG JAVA_VERSION=17
 
 RUN apt-get update &&\
