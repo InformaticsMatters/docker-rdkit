@@ -6,15 +6,18 @@
 # This image contains the artifacts used by the later stages.
 # The image is NOT pushed, just the cached layers used.
 
-FROM debian:bookworm as build
+FROM debian:trixie as build
 LABEL maintainer="Tim Dudgeon<tdudgeon@informaticsmatters.com>"
 
 ARG GIT_REPO=https://github.com/rdkit/rdkit.git
 ARG GIT_BRANCH=master
 ARG GIT_TAG
-ARG POSTGRES_VERSION=15
-ARG BOOST_VER=1.81
-ARG JAVA_VERSION=17
+# also change the POSTGRES_VER variable in the cartridge image section
+ARG POSTGRES_VER=17
+# also change the BOOST_VER variable in the other sections
+ARG BOOST_VER=1.83
+# also change the JAVA_VER variable in the java and tomcat image sections
+ARG JAVA_VER=17
 
 RUN apt-get update &&\
   apt-get install -y --no-install-recommends \
@@ -38,10 +41,10 @@ RUN apt-get update &&\
   libeigen3-dev\
   git\
   wget\
-  openjdk-$JAVA_VERSION-jdk\
-  postgresql-$POSTGRES_VERSION\
-  postgresql-server-dev-$POSTGRES_VERSION\
-  postgresql-plpython3-$POSTGRES_VERSION\
+  openjdk-$JAVA_VER-jdk\
+  postgresql-$POSTGRES_VER\
+  postgresql-server-dev-$POSTGRES_VER\
+  postgresql-plpython3-$POSTGRES_VER\
   zip\
   unzip\
   libfreetype6-dev &&\
@@ -55,8 +58,8 @@ RUN git clone -b $GIT_BRANCH --single-branch $GIT_REPO &&\
 ENV RDBASE=/rdkit
 ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$RDBASE/lib:$RDBASE/Code/JavaWrappers/gmwrapper:/usr/lib/x86_64-linux-gnu:/usr/lib/aarch64-linux-gnu/
 ENV PYTHONPATH=$PYTHONPATH:$RDBASE
-RUN ln -s $(ls -d /usr/lib/jvm/java-$JAVA_VERSION-openjdk-*) /usr/lib/jvm/java-$JAVA_VERSION-openjdk
-ENV JAVA_HOME=/usr/lib/jvm/java-$JAVA_VERSION-openjdk
+RUN ln -s $(ls -d /usr/lib/jvm/java-$JAVA_VER-openjdk-*) /usr/lib/jvm/java-$JAVA_VER-openjdk
+ENV JAVA_HOME=/usr/lib/jvm/java-$JAVA_VER-openjdk
 ENV CLASSPATH=$RDBASE/Code/JavaWrappers/gmwrapper/org.RDKit.jar
 
 RUN mkdir $RDBASE/build
@@ -70,8 +73,8 @@ RUN cmake -Wno-dev\
   -DRDK_BUILD_PYTHON_WRAPPERS=ON\
   -DRDK_BUILD_SWIG_WRAPPERS=ON\
   -DRDK_BUILD_PGSQL=ON\
-  -DPostgreSQL_ROOT=/usr/lib/postgresql/$POSTGRES_VERSION\
-  -DPostgreSQL_TYPE_INCLUDE_DIR=/usr/include/postgresql/$POSTGRES_VERSION/server\
+  -DPostgreSQL_ROOT=/usr/lib/postgresql/$POSTGRES_VER\
+  -DPostgreSQL_TYPE_INCLUDE_DIR=/usr/include/postgresql/$POSTGRES_VER/server\
   -DCMAKE_INSTALL_PREFIX=/usr\
   -DCPACK_PACKAGE_RELOCATABLE=OFF\
   ..
@@ -87,10 +90,10 @@ WORKDIR $RDBASE
 
 ################################# Python image ######################################
 
-FROM debian:bookworm AS python
+FROM debian:trixie AS python
 LABEL maintainer="Tim Dudgeon<tdudgeon@informaticsmatters.com>"
 
-ARG BOOST_VER=1.81
+ARG BOOST_VER=1.83
 
 RUN apt-get update &&\
   apt-get upgrade -y &&\
@@ -140,16 +143,16 @@ USER 1000
 # Dockerfile for Java based RDKit implementation
 # Based on Debian.
 
-FROM debian:bookworm AS java
+FROM debian:trixie AS java
 LABEL maintainer="Tim Dudgeon<tdudgeon@informaticsmatters.com>"
 
-ARG BOOST_VER=1.81
-ARG JAVA_VERSION=17
+ARG BOOST_VER=1.83
+ARG JAVA_VER=17
 
 RUN apt-get update &&\
   apt-get upgrade -y &&\
   apt-get install -y --no-install-recommends\
-  openjdk-$JAVA_VERSION-jre-headless\
+  openjdk-$JAVA_VER-jre-headless\
   libboost$BOOST_VER\
   libboost$BOOST_VER-dev\
   libboost-system$BOOST_VER\
@@ -169,8 +172,8 @@ RUN dpkg -i /tmp/*.deb && rm -f /tmp/*.deb
 
 WORKDIR /
 
-RUN ln -s $(ls -d /usr/lib/jvm/java-$7AVA_VERSION-openjdk-*) /usr/lib/jvm/java-$JAVA_VERSION-openjdk
-ENV JAVA_HOME=/usr/lib/jvm/java-$JAVA_VERSION-openjdk
+RUN ln -s $(ls -d /usr/lib/jvm/java-$7AVA_VERSION-openjdk-*) /usr/lib/jvm/java-$JAVA_VER-openjdk
+ENV JAVA_HOME=/usr/lib/jvm/java-$JAVA_VER-openjdk
 ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/rdkit/gmwrapper
 ENV CLASSPATH=/rdkit/gmwrapper/org.RDKit.jar
 ENV RDBASE=/usr/share/RDKit
@@ -182,16 +185,21 @@ USER 1000
 
 ################################# Tomcat image ######################################
 
-FROM informaticsmatters/tomcat:10.1-jre17 AS tomcat
+FROM debian:trixie AS tomcat
 LABEL maintainer="Tim Dudgeon<tdudgeon@informaticsmatters.com>"
 
-ARG BOOST_VER=1.81
+ARG BOOST_VER=1.83
 
-USER root
+ENV TOMCAT_MAJOR 10
+ENV TOMCAT_VERSION 10.1.33
+ENV ARCHIVE apache-tomcat-$TOMCAT_VERSION.tar.gz
+ENV JAVA_HOME /usr/lib/jvm/java-17-openjdk-amd64
 
 RUN apt-get update &&\
  apt-get upgrade -y &&\
  apt-get install -y --no-install-recommends\
+ openjdk-17-jre-headless\
+ curl\
  unzip\
  libboost-system$BOOST_VER\
  libboost-thread$BOOST_VER\
@@ -208,6 +216,23 @@ COPY --from=build /rdkit/Code/JavaWrappers/gmwrapper/org.RDKit.jar /rdkit/Code/J
 COPY --from=build /rdkit/build/RDKit-*-Linux-Runtime.deb /tmp/
 RUN dpkg -i /tmp/*.deb && rm -f /tmp/*.deb
 
+RUN useradd -u 501 -U -G 0 -m tomcat
+
+WORKDIR /usr/local
+
+RUN curl -s -o tomcat.tar.gz -L https://www.apache.org/dist/tomcat/tomcat-$TOMCAT_MAJOR/v$TOMCAT_VERSION/bin/$ARCHIVE &&\
+ tar xfz tomcat.tar.gz &&\
+ rm tomcat.tar.gz &&\
+ mv apache-tomcat-$TOMCAT_VERSION tomcat &&\
+ rm tomcat/bin/*.bat &&\
+ rm -rf tomcat/webapps/* &&\
+ chown -R 501:0 tomcat &&\
+ chmod -R g+r tomcat &&\
+ chmod g+w tomcat tomcat/logs tomcat/webapps tomcat/temp tomcat/work tomcat/conf tomcat/bin tomcat/lib
+
+WORKDIR /usr/local/tomcat
+ENV CATALINA_HOME /usr/local/tomcat
+EXPOSE 8080
 USER 501
 
 WORKDIR $CATALINA_HOME
@@ -217,6 +242,7 @@ ENV RDBASE=/usr/share/RDKit/
 
 RUN echo "CLASSPATH=/rdkit/gmwrapper/org.RDKit.jar\n" > /usr/local/tomcat/bin/setenv.sh
 
+CMD ["$CATALINA_HOME/bin/catalina.sh", "run"]
 
 ################################# Cartridge image ###################################
 # Dockerfile for RDKit cartridge based on Debian.
@@ -225,11 +251,11 @@ RUN echo "CLASSPATH=/rdkit/gmwrapper/org.RDKit.jar\n" > /usr/local/tomcat/bin/se
 # build the deb packages so we need to install the packages using apt to have tight control over this.
 #
 
-FROM debian:bookworm AS cartridge
+FROM debian:trixie AS cartridge
 LABEL maintainer="Tim Dudgeon<tdudgeon@informaticsmatters.com>"
 
-ENV PG_MAJOR=15
-ENV BOOST_VER=1.81
+ENV POSTGRES_VER=17
+ENV BOOST_VER=1.83
 
 RUN apt-get update &&\
  apt-get upgrade -y &&\
@@ -247,9 +273,9 @@ RUN apt-get update &&\
  libboost-atomic$BOOST_VER\
  libboost-iostreams$BOOST_VER\
  libfreetype6\ 
- postgresql-$PG_MAJOR\
- postgresql-client-$PG_MAJOR\
- postgresql-plpython3-$PG_MAJOR\
+ postgresql-$POSTGRES_VER\
+ postgresql-client-$POSTGRES_VER\
+ postgresql-plpython3-$POSTGRES_VER\
  pgtop\
  gosu\
  wget\
@@ -266,15 +292,15 @@ RUN dpkg -i /tmp/RDKit-*.deb && rm -f /tmp/*.deb
 WORKDIR /
 
 # make the sample config easier to munge (and "correct by default")
-RUN mv -v "/usr/share/postgresql/$PG_MAJOR/postgresql.conf.sample" /usr/share/postgresql/ \
-  && ln -sv ../postgresql.conf.sample "/usr/share/postgresql/$PG_MAJOR/" \
+RUN mv -v "/usr/share/postgresql/$POSTGRES_VER/postgresql.conf.sample" /usr/share/postgresql/ \
+  && ln -sv ../postgresql.conf.sample "/usr/share/postgresql/$POSTGRES_VER/" \
   && sed -ri "s!^#?(listen_addresses)\s*=\s*\S+.*!\1 = '*'!" /usr/share/postgresql/postgresql.conf.sample
 
 RUN mkdir -p /var/run/postgresql && chown -R postgres:postgres /var/run/postgresql && chmod 2777 /var/run/postgresql
 
 ENV RDBASE=/usr/share/RDKit
 ENV PGDATA /var/lib/postgresql/data
-ENV PATH $PATH:/usr/lib/postgresql/$PG_MAJOR/bin
+ENV PATH $PATH:/usr/lib/postgresql/$POSTGRES_VER/bin
 # this 777 will be replaced by 700 at runtime (allows semi-arbitrary "--user" values)
 RUN mkdir -p "$PGDATA" && chown -R postgres:postgres "$PGDATA" && chmod 777 "$PGDATA"
 VOLUME /var/lib/postgresql/data
