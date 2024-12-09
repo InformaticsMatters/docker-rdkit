@@ -1,0 +1,41 @@
+# Dockerfile for packaging a Python based RDKit implementation to deploy
+# as an AWS Lambda layer.  See comments in build-python36-lambda.sh for
+# details.
+
+FROM lambci/lambda:build-python3.6 
+
+RUN yum install -y --setopt=tsflags=nodocs --setopt=override_install_langs=en_US.utf8\
+ sqlite\
+ sqlite-devel\
+ yum clean -y all &&\
+ rm -rf /var/cache/yum
+
+RUN pip install numpy
+RUN ln -s /usr/lib/python3.6/site-packages/rdkit /var/lang/lib/python3.6/site-packages/rdkit
+
+ARG DOCKER_TAG=latest
+
+COPY artifacts/python36-lambda/$DOCKER_TAG/rpms/RDKit-*-Linux-Runtime.rpm artifacts/python36-lambda/$DOCKER_TAG/rpms/RDKit-*-Linux-Python.rpm artifacts/python36-lambda/$DOCKER_TAG/boost/boost-1.58.0.tgz /tmp/
+RUN cd /usr/lib64 && tar xvfz /tmp/boost-1.58.0.tgz && rm /tmp/boost-1.58.0.tgz && ls -l /usr/lib64/*boost*
+RUN rpm --nodeps -iv /tmp/*.rpm && rm -f /tmp/*.rpm
+
+# Copy all files for the lambda layer
+# Note that this DOES include the NumPy dependency - attempts to use
+# the layer built from this image with the AWS provided Python 3.6
+# SciPy1x layer were not successful.
+RUN mkdir -p /tmp/layer/lib && mkdir -p /tmp/layer/python
+RUN cp -av /usr/lib/python3.6/site-packages/rdkit /tmp/layer/python
+RUN cp -av /var/lang/lib/python3.6/site-packages/numpy /tmp/layer/python
+RUN cp -av /usr/lib64/libRDKit* /tmp/layer/lib
+RUN cp -av /usr/lib64/libboost_* /tmp/layer/lib
+RUN cp -av /usr/lib64/libsqlite3* /tmp/layer/lib
+
+# Assemble the lambda layer as a zipfile
+WORKDIR /tmp/layer
+RUN zip --symlinks -rv rdkit-python36.zip *
+
+WORKDIR /
+
+# add the rdkit user
+RUN useradd -u 1000 -U -G 0 rdkit
+USER 1000
