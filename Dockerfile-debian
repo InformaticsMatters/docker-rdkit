@@ -172,7 +172,7 @@ RUN dpkg -i /tmp/*.deb && rm -f /tmp/*.deb
 
 WORKDIR /
 
-RUN ln -s $(ls -d /usr/lib/jvm/java-$7AVA_VERSION-openjdk-*) /usr/lib/jvm/java-$JAVA_VER-openjdk
+RUN ln -s $(ls -d /usr/lib/jvm/java-$JAVA_VER-openjdk-*) /usr/lib/jvm/java-$JAVA_VER-openjdk
 ENV JAVA_HOME=/usr/lib/jvm/java-$JAVA_VER-openjdk
 ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/rdkit/gmwrapper
 ENV CLASSPATH=/rdkit/gmwrapper/org.RDKit.jar
@@ -191,14 +191,15 @@ LABEL maintainer="Tim Dudgeon<tdudgeon@informaticsmatters.com>"
 ARG BOOST_VER=1.83
 
 ENV TOMCAT_MAJOR 10
-ENV TOMCAT_VERSION 10.1.33
+ENV TOMCAT_VERSION 10.1.41
 ENV ARCHIVE apache-tomcat-$TOMCAT_VERSION.tar.gz
-ENV JAVA_HOME /usr/lib/jvm/java-17-openjdk-amd64
+ENV JAVA_VER=17
+ENV JAVA_HOME /usr/lib/jvm/java-$JAVA_VER-openjdk
 
 RUN apt-get update &&\
  apt-get upgrade -y &&\
  apt-get install -y --no-install-recommends\
- openjdk-17-jre-headless\
+ openjdk-$JAVA_VER-jre-headless\
  curl\
  unzip\
  libboost-system$BOOST_VER\
@@ -211,6 +212,8 @@ RUN apt-get update &&\
  libboost-iostreams$BOOST_VER\
  libfreetype6-dev &&\
  apt-get clean -y
+
+RUN ln -s $(ls -d /usr/lib/jvm/java-$JAVA_VER-openjdk-*) /usr/lib/jvm/java-$JAVA_VER-openjdk
 
 COPY --from=build /rdkit/Code/JavaWrappers/gmwrapper/org.RDKit.jar /rdkit/Code/JavaWrappers/gmwrapper/libGraphMolWrap.so /rdkit/gmwrapper/
 COPY --from=build /rdkit/build/RDKit-*-Linux-Runtime.deb /tmp/
