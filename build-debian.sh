@@ -5,7 +5,7 @@ set -xe
 source params.sh
 
 DBO=${DOCKER_BUILD_OPTS:-''}
-PLATFORM=${DOCKER_PLATFORM:-linux/amd64,linux/arm64}
+PLATFORM=${DOCKER_PATFORM:-linux/amd64,linux/arm64}
 DOCKERFILE=Dockerfile-debian
 
 # build image for python3 on debian
