@@ -4,7 +4,7 @@ set -xe
 
 source params.sh
 
-DBO=${DOCKER_BUILD_OPTS:-''}
+DBO=${DOCKER_BUILD_OPTS:---no-cache}
 PLATFORM=${DOCKER_PATFORM:-linux/amd64,linux/arm64}
 DOCKERFILE=Dockerfile-debian
 
