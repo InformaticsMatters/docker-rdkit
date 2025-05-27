@@ -6,7 +6,6 @@
 # This image contains the artifacts used by the later stages.
 # The image is NOT pushed, just the cached layers used.
 
-# also change the base image in the other sections
 FROM debian:trixie as build
 LABEL maintainer="Tim Dudgeon<tdudgeon@informaticsmatters.com>"
 
@@ -17,8 +16,8 @@ ARG GIT_TAG
 ARG POSTGRES_VER=17
 # also change the BOOST_VER variable in the other sections
 ARG BOOST_VER=1.83
-# also change the JAVA_VER variable in the java image section
-ARG JAVA_VER=17
+# also change the JAVA_VER variable in the java and tomcat image sections
+ARG JAVA_VER=21
 
 RUN apt-get update &&\
   apt-get install -y --no-install-recommends \
@@ -97,7 +96,7 @@ LABEL maintainer="Tim Dudgeon<tdudgeon@informaticsmatters.com>"
 ARG BOOST_VER=1.83
 
 RUN apt-get update &&\
-  apt-get upgrade -y &&\ 
+  apt-get upgrade -y &&\
   apt-get install -y --no-install-recommends\
   python3\
   python3-dev\
@@ -130,7 +129,7 @@ RUN dpkg -i /tmp/RDKit-*.deb && rm -f /tmp/*.deb
 ENV RDBASE=/usr/share/RDKit
 
 # since the 2023 builds cpack seems to putting things under site-packages rather than dist-packages 
-ENV PYTHONPATH=/usr/lib/python3.11/site-packages
+ENV PYTHONPATH=/usr/lib/python3.9/site-packages
 
 WORKDIR /
 
@@ -148,7 +147,7 @@ FROM debian:trixie AS java
 LABEL maintainer="Tim Dudgeon<tdudgeon@informaticsmatters.com>"
 
 ARG BOOST_VER=1.83
-ARG JAVA_VER=17
+ARG JAVA_VER=21
 
 RUN apt-get update &&\
   apt-get upgrade -y &&\
@@ -192,16 +191,15 @@ LABEL maintainer="Tim Dudgeon<tdudgeon@informaticsmatters.com>"
 ARG BOOST_VER=1.83
 
 ENV TOMCAT_MAJOR 10
-ENV TOMCAT_VERSION 10.1.33
+ENV TOMCAT_VERSION 10.1.41
 ENV ARCHIVE apache-tomcat-$TOMCAT_VERSION.tar.gz
-ENV JAVA_HOME /usr/lib/jvm/java-17-openjdk-amd64
-
-USER root
+ENV JAVA_VER=21
+ENV JAVA_HOME /usr/lib/jvm/java-$JAVA_VER-openjdk
 
 RUN apt-get update &&\
  apt-get upgrade -y &&\
  apt-get install -y --no-install-recommends\
- openjdk-17-jre-headless\
+ openjdk-$JAVA_VER-jre-headless\
  curl\
  unzip\
  libboost-system$BOOST_VER\
@@ -214,6 +212,8 @@ RUN apt-get update &&\
  libboost-iostreams$BOOST_VER\
  libfreetype6-dev &&\
  apt-get clean -y
+
+RUN ln -s $(ls -d /usr/lib/jvm/java-$JAVA_VER-openjdk-*) /usr/lib/jvm/java-$JAVA_VER-openjdk
 
 COPY --from=build /rdkit/Code/JavaWrappers/gmwrapper/org.RDKit.jar /rdkit/Code/JavaWrappers/gmwrapper/libGraphMolWrap.so /rdkit/gmwrapper/
 COPY --from=build /rdkit/build/RDKit-*-Linux-Runtime.deb /tmp/
@@ -275,7 +275,7 @@ RUN apt-get update &&\
  libboost-date-time$BOOST_VER\
  libboost-atomic$BOOST_VER\
  libboost-iostreams$BOOST_VER\
- libfreetype6\
+ libfreetype6\ 
  postgresql-$POSTGRES_VER\
  postgresql-client-$POSTGRES_VER\
  postgresql-plpython3-$POSTGRES_VER\
@@ -308,7 +308,7 @@ ENV PATH $PATH:/usr/lib/postgresql/$POSTGRES_VER/bin
 RUN mkdir -p "$PGDATA" && chown -R postgres:postgres "$PGDATA" && chmod 777 "$PGDATA"
 VOLUME /var/lib/postgresql/data
 
-ENV PYTHONPATH=/usr/lib/python3.11/site-packages
+ENV PYTHONPATH=/usr/lib/python3.9/site-packages
 
 COPY docker-entrypoint-cartridge.sh /usr/local/bin/docker-entrypoint.sh
 RUN ln -s usr/local/bin/docker-entrypoint.sh / # backwards compat
@@ -316,3 +316,5 @@ ENTRYPOINT ["docker-entrypoint.sh"]
 
 EXPOSE 5432
 CMD ["postgres"]
+
+
