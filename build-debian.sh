@@ -27,6 +27,7 @@ docker buildx build $DBO -f $DOCKERFILE \
   -t $BASE/rdkit-java-debian:$DOCKER_TAG \
   --build-arg GIT_REPO=$GIT_REPO \
   --build-arg GIT_BRANCH=$GIT_BRANCH \
+  --build-arg N_CORES=$N_CORES \
   --push .
 echo "Built images $BASE/rdkit-java-debian:$DOCKER_TAG"
 
@@ -37,6 +38,7 @@ docker buildx build $DBO -f $DOCKERFILE \
   -t $BASE/rdkit-tomcat-debian:$DOCKER_TAG \
   --build-arg GIT_REPO=$GIT_REPO \
   --build-arg GIT_BRANCH=$GIT_BRANCH \
+  --build-arg N_CORES=$N_CORES \
   --push .
 echo "Built images $BASE/rdkit-tomcat-debian:$DOCKER_TAG"
 
@@ -47,6 +49,7 @@ docker buildx build $DBO -f $DOCKERFILE \
   -t $BASE/rdkit-cartridge-debian:$DOCKER_TAG \
   --build-arg GIT_REPO=$GIT_REPO \
   --build-arg GIT_BRANCH=$GIT_BRANCH \
+  --build-arg N_CORES=$N_CORES \
   --push .
 echo "Built images $BASE/rdkit-cartridge-debian:$DOCKER_TAG"
 
