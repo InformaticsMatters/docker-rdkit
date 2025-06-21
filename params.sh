@@ -1,4 +1,4 @@
-export DOCKER_TAG=Release_2025_03_2
+export DOCKER_TAG=Release_2025_03_3
 export GIT_REPO=https://github.com/rdkit/rdkit.git
 export GIT_BRANCH=Release_2025_03
 export GIT_TAG=$DOCKER_TAG
