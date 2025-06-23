@@ -6,7 +6,7 @@
 # This image contains the artifacts used by the later stages.
 # The image is NOT pushed, just the cached layers used.
 
-FROM debian:trixie as build
+FROM debian:trixie AS build
 LABEL maintainer="Tim Dudgeon<tdudgeon@informaticsmatters.com>"
 
 ARG GIT_REPO=https://github.com/rdkit/rdkit.git
@@ -18,6 +18,8 @@ ARG POSTGRES_VER=17
 ARG BOOST_VER=1.83
 # also change the JAVA_VER variable in the java and tomcat image sections
 ARG JAVA_VER=21
+# allow the number of cores used to compile to be specified
+ARG N_CORES=1
 
 RUN apt-get update &&\
   apt-get install -y --no-install-recommends \
@@ -79,8 +81,7 @@ RUN cmake -Wno-dev\
   -DCPACK_PACKAGE_RELOCATABLE=OFF\
   ..
 
-RUN nproc=$(getconf _NPROCESSORS_ONLN)\
-  && make -j $(( nproc > 2 ? nproc - 2 : 1 ))
+RUN make -j $N_CORES
 RUN make install
 RUN sh Code/PgSQL/rdkit/pgsql_install.sh
 RUN cpack -G DEB
