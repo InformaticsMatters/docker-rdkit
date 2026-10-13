@@ -4,7 +4,7 @@ set -xe
 
 source params.sh
 
-# set DOCKER_BUILD_OPTS to empty string to disable --no-cache
+# set DOCKER_BUILD_OPTS to " " (space) to disable --no-cache
 DBO=${DOCKER_BUILD_OPTS:---no-cache}
 PLATFORM=${DOCKER_PLATFORM:-linux/amd64,linux/arm64}
 DOCKERFILE=Dockerfile-debian
