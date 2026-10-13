@@ -191,11 +191,11 @@ LABEL maintainer="Tim Dudgeon<tdudgeon@informaticsmatters.com>"
 
 ARG BOOST_VER=1.83
 
-ENV TOMCAT_MAJOR 10
-ENV TOMCAT_VERSION 10.1.41
-ENV ARCHIVE apache-tomcat-$TOMCAT_VERSION.tar.gz
+ENV TOMCAT_MAJOR=10
+ENV TOMCAT_VERSION=10.1.61
+ENV ARCHIVE=apache-tomcat-$TOMCAT_VERSION.tar.gz
 ENV JAVA_VER=21
-ENV JAVA_HOME /usr/lib/jvm/java-$JAVA_VER-openjdk
+ENV JAVA_HOME=/usr/lib/jvm/java-$JAVA_VER-openjdk
 
 RUN apt-get update &&\
  apt-get upgrade -y &&\
@@ -224,7 +224,7 @@ RUN useradd -u 501 -U -G 0 -m tomcat
 
 WORKDIR /usr/local
 
-RUN curl -s -o tomcat.tar.gz -L https://www.apache.org/dist/tomcat/tomcat-$TOMCAT_MAJOR/v$TOMCAT_VERSION/bin/$ARCHIVE &&\
+RUN curl -s -o tomcat.tar.gz -L https://archive.apache.org/dist/tomcat/tomcat-$TOMCAT_MAJOR/v$TOMCAT_VERSION/bin/$ARCHIVE &&\
  tar xfz tomcat.tar.gz &&\
  rm tomcat.tar.gz &&\
  mv apache-tomcat-$TOMCAT_VERSION tomcat &&\
@@ -235,7 +235,7 @@ RUN curl -s -o tomcat.tar.gz -L https://www.apache.org/dist/tomcat/tomcat-$TOMCA
  chmod g+w tomcat tomcat/logs tomcat/webapps tomcat/temp tomcat/work tomcat/conf tomcat/bin tomcat/lib
 
 WORKDIR /usr/local/tomcat
-ENV CATALINA_HOME /usr/local/tomcat
+ENV CATALINA_HOME=/usr/local/tomcat
 EXPOSE 8080
 USER 501
 
@@ -303,8 +303,8 @@ RUN mv -v "/usr/share/postgresql/$POSTGRES_VER/postgresql.conf.sample" /usr/shar
 RUN mkdir -p /var/run/postgresql && chown -R postgres:postgres /var/run/postgresql && chmod 2777 /var/run/postgresql
 
 ENV RDBASE=/usr/share/RDKit
-ENV PGDATA /var/lib/postgresql/data
-ENV PATH $PATH:/usr/lib/postgresql/$POSTGRES_VER/bin
+ENV PGDATA=/var/lib/postgresql/data
+ENV PATH=$PATH:/usr/lib/postgresql/$POSTGRES_VER/bin
 # this 777 will be replaced by 700 at runtime (allows semi-arbitrary "--user" values)
 RUN mkdir -p "$PGDATA" && chown -R postgres:postgres "$PGDATA" && chmod 777 "$PGDATA"
 VOLUME /var/lib/postgresql/data
