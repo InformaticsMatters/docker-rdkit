@@ -189,3 +189,16 @@ Notes:
 * Tests for built images.
 
 Requests also welcome!
+
+## Building
+
+`./build-debian.sh` builds all four images with a single `docker buildx bake` call (see `docker-bake.hcl`), so the
+RDKit compile happens once per platform and is shared by all images. Layers are cached; the RDKit source layer is
+invalidated only when the commit of the requested branch/tag changes. Options (environment variables):
+
+* `DOCKER_BUILD_OPTS` - extra bake options, e.g. `--no-cache` to force a full rebuild (default: none)
+* `DOCKER_PLATFORM` - default `linux/amd64,linux/arm64`; use `linux/amd64` for quick dev builds
+* `DOCKER_PUSH=false` - build without pushing
+* `DOCKER_TARGETS` - subset of `python java tomcat cartridge`
+* `DOCKER_CACHE_REF` - optional registry cache reference, e.g. `informaticsmatters/rdkit-buildcache:debian`
+* `DOCKER_N_CORES` - cores used for compiling
