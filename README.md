@@ -202,3 +202,43 @@ invalidated only when the commit of the requested branch/tag changes. Options (e
 * `DOCKER_TARGETS` - subset of `python java tomcat cartridge`
 * `DOCKER_CACHE_REF` - optional registry cache reference, e.g. `informaticsmatters/rdkit-buildcache:debian`
 * `DOCKER_N_CORES` - cores used for compiling
+
+
+### New release
+
+When a new RDKit release becomes available the general approach to build the images should be:
+
+1. check the build runs on the `master` branch
+2. create or update the `Release_YYYY_0X` branch. If new, branch of master, replace the `README.txt` with the content below
+   and update `params.sh` with content similar to below (with appropriate release year and month) and run the build
+3. create the `Release_YYYY_0X_Y` branch from the `Release_YYYY_0X` branch, update the `params.sh` with content similar 
+   to below (with appropriate release year, month and version) and run the build
+
+README.txt for `Release_*` branch:
+```
+# Dockerfiles for building RDKit.
+
+See this document on the master branch for details
+```
+
+Sample params.sh for `Release_YYYY_0X` branches (adjust year and month accordingly):
+```
+export DOCKER_TAG=Release_2024_03
+export GIT_REPO=https://github.com/rdkit/rdkit.git
+export GIT_BRANCH=$DOCKER_TAG
+unset GIT_TAG
+
+export BASE=informaticsmatters
+echo "DOCKER_TAG=$DOCKER_TAG GIT_BRANCH=$GIT_BRANCH"
+```
+
+Sample params.sh for `Release_YYYY_0X_Y` branches (adjust year, month and version accordingly):
+```
+export DOCKER_TAG=Release_2024_03_1
+export GIT_REPO=https://github.com/rdkit/rdkit.git
+export GIT_BRANCH=Release_2024_03
+export GIT_TAG=$DOCKER_TAG
+
+export BASE=informaticsmatters
+echo "DOCKER_TAG=$DOCKER_TAG GIT_BRANCH=$GIT_BRANCH GIT_TAG=$GIT_TAG"
+```
