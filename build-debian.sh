@@ -4,53 +4,30 @@ set -xe
 
 source params.sh
 
-DBO=${DOCKER_BUILD_OPTS:---no-cache}
-PLATFORM=${DOCKER_PLATFORM:-linux/amd64,linux/arm64}
-DOCKERFILE=Dockerfile-debian
-nproc=$(getconf _NPROCESSORS_ONLN) && N_CORES=${DOCKER_N_CORES:-$(( nproc > 2 ? nproc - 2 : 1 ))}
+# Builds all images with a single 'buildx bake' call so the RDKit compile (the 'build' stage)
+# happens once per platform and is shared by all targets.
+#
+# Environment overrides:
+#   DOCKER_BUILD_OPTS  extra bake options, e.g. "--no-cache" to force a full rebuild (default: none)
+#   DOCKER_PLATFORM    platforms to build (default: linux/amd64,linux/arm64)
+#   DOCKER_N_CORES     cores used to compile (default: all but 2)
+#   DOCKER_CACHE_REF   optional registry cache ref, e.g. informaticsmatters/rdkit-buildcache:debian
+#   DOCKER_TARGETS     targets to build (default: python java tomcat cartridge)
+#   DOCKER_PUSH        set to "false" to not push (default: push)
+DBO=${DOCKER_BUILD_OPTS:-}
+nproc=$(getconf _NPROCESSORS_ONLN)
+export N_CORES=${DOCKER_N_CORES:-$(( nproc > 2 ? nproc - 2 : 1 ))}
+export PLATFORMS=${DOCKER_PLATFORM:-linux/amd64,linux/arm64}
+export CACHE_REF=${DOCKER_CACHE_REF:-}
+export GIT_TAG=${GIT_TAG:-}
+TARGETS=${DOCKER_TARGETS:-python java tomcat cartridge}
+if [ "${DOCKER_PUSH:-true}" = "false" ]; then PUSH=""; else PUSH="--push"; fi
 
-# build image for python3 on debian
-docker buildx build $DBO -f $DOCKERFILE \
-  --platform $PLATFORM \
-  --target python \
-  -t $BASE/rdkit-python3-debian:$DOCKER_TAG \
-  --build-arg GIT_REPO=$GIT_REPO \
-  --build-arg GIT_BRANCH=$GIT_BRANCH \
-  --build-arg N_CORES=$N_CORES \
-  --push .
-echo "Built images $BASE/rdkit-python3-debian:$DOCKER_TAG"
+# Resolve the commit(s) of the requested ref so the clone layer (and everything after it) is
+# rebuilt only when RDKit has actually changed, while the earlier apt layers stay cached.
+export RDKIT_REF=$(git ls-remote $GIT_REPO ${GIT_TAG:+"refs/tags/$GIT_TAG" "refs/tags/$GIT_TAG^{}"} "refs/heads/$GIT_BRANCH" | awk '{print $1}' | tr '\n' '-')
+echo "RDKIT_REF=$RDKIT_REF"
 
-# build image for java on debian
-docker buildx build $DBO -f $DOCKERFILE \
-  --platform $PLATFORM \
-  --target java \
-  -t $BASE/rdkit-java-debian:$DOCKER_TAG \
-  --build-arg GIT_REPO=$GIT_REPO \
-  --build-arg GIT_BRANCH=$GIT_BRANCH \
-  --build-arg N_CORES=$N_CORES \
-  --push .
-echo "Built images $BASE/rdkit-java-debian:$DOCKER_TAG"
+docker buildx bake -f docker-bake.hcl $DBO $PUSH $TARGETS
 
-# build image for tomcat on debian
-docker buildx build $DBO -f $DOCKERFILE \
-  --platform $PLATFORM \
-  --target tomcat \
-  -t $BASE/rdkit-tomcat-debian:$DOCKER_TAG \
-  --build-arg GIT_REPO=$GIT_REPO \
-  --build-arg GIT_BRANCH=$GIT_BRANCH \
-  --build-arg N_CORES=$N_CORES \
-  --push .
-echo "Built images $BASE/rdkit-tomcat-debian:$DOCKER_TAG"
-
-# build image for cartridge on debian
-docker buildx build $DBO -f $DOCKERFILE \
-  --platform $PLATFORM \
-  --target cartridge \
-  -t $BASE/rdkit-cartridge-debian:$DOCKER_TAG \
-  --build-arg GIT_REPO=$GIT_REPO \
-  --build-arg GIT_BRANCH=$GIT_BRANCH \
-  --build-arg N_CORES=$N_CORES \
-  --push .
-echo "Built images $BASE/rdkit-cartridge-debian:$DOCKER_TAG"
-
-
+echo "Built images $BASE/rdkit-{python3,java,tomcat,cartridge}-debian:$DOCKER_TAG"
