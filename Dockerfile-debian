@@ -12,6 +12,8 @@ LABEL maintainer="Tim Dudgeon<tdudgeon@informaticsmatters.com>"
 ARG GIT_REPO=https://github.com/rdkit/rdkit.git
 ARG GIT_BRANCH=master
 ARG GIT_TAG
+# commit sha of the requested ref; used to invalidate the cache when the RDKit source changes
+ARG RDKIT_REF
 # also change the POSTGRES_VER variable in the cartridge image section
 ARG POSTGRES_VER=17
 # also change the BOOST_VER variable in the other sections
@@ -54,7 +56,7 @@ RUN apt-get update &&\
 
 
 RUN if [ $GIT_TAG ]; then echo "Checking out tag $GIT_TAG from repo $GIT_REPO branch $GIT_BRANCH"; else echo "Checking out repo $GIT_REPO branch $GIT_BRANCH"; fi
-RUN git clone -b $GIT_BRANCH --single-branch $GIT_REPO &&\
+RUN echo "RDKit ref: $RDKIT_REF" && git clone -b $GIT_BRANCH --single-branch $GIT_REPO &&\
   if [ $GIT_TAG ]; then cd rdkit && git fetch --tags && git checkout $GIT_TAG; fi
 
 ENV RDBASE=/rdkit
